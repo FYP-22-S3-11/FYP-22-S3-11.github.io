@@ -1,0 +1,87 @@
+/*.push-to-bottom {
+  position: absolute;
+  bottom: 5%;
+}*/
+
+body {
+  background-color: #1d2123;
+}
+
+body {
+  background-color: #1d2123;
+  font-family: "Inter", sans-serif;
+}
+
+
+.timeline-area {
+  margin-top: 10px;
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  padding: 0 15px;
+  box-sizing: border-box;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.one-block {
+  font-family: "Maven Pro", sans-serif;
+  border-style: solid;
+  border-color: rgb(117, 119, 121);
+  padding: 10px 10px 0;
+  display: inline-block;
+  font-size: 12px;
+  margin: 5px 0;
+  box-sizing: border-box;
+  line-height: 1;
+  width: 650px;
+  text-align: left;
+  color: rgb(218, 216, 216);
+}
+
+.text-center {
+  font-size: x-large;
+  text-align: center;
+}
+
+.one-block:hover {
+  background-color: rgb(0, 0, 0);
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.truncate label {
+  text-align: center;
+  font-size: small;
+}
+
+.one-block pre {
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.one-block label {
+  width: 90px;
+  padding-right: 15px;
+  text-align: right;
+}
+
+.one-block p {
+  margin: 0;
+}
+
+.block-data {
+  font-size: 15px;
+  border: 1px solid gray;
+  padding: 5px 0 0;
+}
+
+.block-data label {
+  padding-left: 10px;
+}
