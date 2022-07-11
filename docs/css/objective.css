@@ -57,3 +57,17 @@ span {
 .infos {
     margin-top: 5%;
 }
+
+@media screen and (max-width: 768px) {
+    .objective-container {
+        flex-direction: column;
+
+    }
+
+    .infotab {
+        width: 70%;
+        height: auto;
+        margin-top: 20px;
+        align-self: center;
+    }
+}

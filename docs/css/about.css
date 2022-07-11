@@ -66,3 +66,9 @@
 .block-data label {
   padding-left: 10px;
 }
+
+@media screen and (max-width: 600px) {
+  .one-block {
+    width: 100%;
+  }
+}

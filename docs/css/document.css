@@ -2,7 +2,6 @@
 
 
 /* Toggle Styles */
-
 #viewport {
     padding-left: 250px;
     -webkit-transition: all 0.5s ease;
@@ -12,7 +11,6 @@
 }
 
 /* Sidebar Styles */
-
 #sidebar {
     z-index: 1000;
     position: fixed;
@@ -45,7 +43,6 @@
     color: #fff;
 }
 
-#sidebar .nav {}
 
 #sidebar .nav a {
     background: none;
@@ -84,4 +81,30 @@
 
 .container-fluid p {
     font-size: large;
+}
+
+.mobile-documentation {
+    display: none;
+}
+
+@media screen and (max-width: 600px) {
+    .documentations {
+        display: none;
+    }
+
+    .mobile-documentation {
+        display: block;
+    }
+
+    #sidebar {
+        display: none;
+    }
+    
+    #content {
+        padding-left: 0;
+    }
+
+    .container-fluid ul li a {
+        font-size: normal;
+    }
 }
