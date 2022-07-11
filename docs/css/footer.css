@@ -1,0 +1,39 @@
+hr {
+    border: 0;
+    border-top: 1px solid rgb(255, 255, 255);
+    margin-top: 10px;
+}
+
+h1 {
+    color: rgb(255, 255, 255);
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+a {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+}
+
+P {
+    font-size: small;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+.footer-container {
+    margin: auto;
+    display: flex;
+}
+
+.footer-content {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+

@@ -1,0 +1,55 @@
+p,
+h1,
+h3 {
+    cursor: normal;
+    text-align: center;
+    line-height: 1.5;
+}
+
+p {
+    font-size: 18px;
+}
+
+h3 {
+    font-size: 20px;
+    font-weight: 400;
+}
+
+span {
+    font-size: 20px;
+    text-align: left;
+    display: flex;
+    justify-content: center;
+    line-height: 1.5;
+}
+
+.objective-area {
+    margin-top: 50px;
+}
+
+.title {
+    font-size: 38px;
+    font-weight: normal;
+    text-align: center;
+    margin: auto;
+}
+
+.objective-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.infotab {
+    margin-right: 20px;
+    width: 20%;
+    height: 250px;
+    background: linear-gradient(#555, #444);
+    float:right;
+    margin-top: .2%;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, .5);
+}
+
+.infos {
+    margin-top: 5%;
+}
