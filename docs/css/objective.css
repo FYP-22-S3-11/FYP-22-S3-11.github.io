@@ -6,9 +6,7 @@ h3 {
     line-height: 1.5;
 }
 
-p {
-    font-size: 18px;
-}
+
 
 h3 {
     font-size: 20px;
@@ -48,6 +46,12 @@ span {
     float:right;
     margin-top: .2%;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, .5);
+}
+
+.infotab p {
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
 }
 
 .infos {
