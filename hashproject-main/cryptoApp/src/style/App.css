@@ -1,0 +1,213 @@
+body {
+  background: linear-gradient(85.28deg, #1d1e2c 4.09%, #000000 98%);
+}
+
+.text-header {
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 44px;
+}
+.main-contain {
+  position: relative;
+  height: 100%;
+}
+.header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn-primary {
+  width: 192px;
+  height: 60px;
+  top: 8px;
+  margin-right: 10px;
+  background: linear-gradient(225deg, #18c8ff 14.89%, #933ffe 85.85%);
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 100%;
+  text-align: center;
+}
+.main-container {
+  margin-top: 60px;
+}
+
+.w-100 {
+  width: 300px;
+}
+
+.d-flex {
+  display: flex;
+}
+.mt-3 {
+  margin-top: 25px;
+}
+
+.align-items-center {
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+}
+.text-center {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.home-text {
+  font-weight: 600;
+  font-size: 40px;
+  background: linear-gradient(
+    180deg,
+    #000000 0.01%,
+    #1d1e2c 0.02%,
+    #ffffff 73.44%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.comparsion-tbl-wrap {
+  padding: 0 20px 20px 20px;
+  background: #121318;
+}
+.comparsion-tbl-wrap .markit-stat {
+  font-family: "Graphik";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 15px;
+  color: #23b852;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.comparsion-tbl-wrap .markit-stat.negative {
+  color: #FF4F4F;
+}
+
+.feature-list {
+  margin: 0;
+  padding: 0 0 0 20px;
+}
+.searchbar-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(236, 240, 245, 0.1);
+  padding: 20px 0;
+}
+.searchbar-wrapper h2 {
+  flex-grow: 1;
+}
+.search-box .wrapper {
+  border-radius: 6px;
+}
+.searchbar-wrapper .search-box {
+  width: 400px;
+}
+.search-action {
+  max-width: 200px;
+  margin-left: 20px;
+}
+
+.bdHMCv.wrapper {
+  border-radius: 6px;
+  background-color: transparent;
+  border: 1px solid #fff;
+}
+.comparsion-table {
+  width: 100%;
+  border-spacing: 0;
+}
+
+.comparsion-table tr td {
+  vertical-align: middle;
+  padding: 20px;
+  border-bottom: 1px solid #3b3b3b;
+}
+.comparsion-table tr td .value-pairs {
+  border-left: 1px solid #fff;
+  padding-left: 20px;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.comparsion-table tr td:nth-child(1) {
+  border-bottom-left-radius: 6px;
+  border-top-left-radius: 6px;
+}
+.comparsion-table tr td:nth-last-of-type(1) {
+  border-bottom-right-radius: 6px;
+  border-top-right-radius: 6px;
+}
+.comparsion-table tr td .value-label {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 13px;
+  margin-bottom: 6px;
+  color: #ffffff;
+}
+
+.comparsion-table tr:hover {
+  background: #080808;
+}
+.comparsion-table tr td .result {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 15px;
+
+  color: #ffffff;
+}
+
+.loader {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+}

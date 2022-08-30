@@ -1,0 +1,1 @@
+from .hashModels import Crypto
