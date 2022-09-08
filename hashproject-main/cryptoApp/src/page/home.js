@@ -20,14 +20,20 @@ const Home = () => {
 
     const getDetailApiCall = useCallback((id, status = false) => {
         cryptoService.getCoinDetail(id).then((i) => {
-            selectedList([...list, i?.data?.data])
-            if (status) {
-                toast.success("Add successfully")
+            if (list?.findIndex(item => i?.data?.data?.name.trim().toLowerCase() === item.name.toLowerCase()) === -1) {
+                selectedList([...list, i?.data?.data])
+                if (status) {
+                    toast.success("Add successfully")
+                    setSearchText('')
+                    setSearchIteam(null)
+                }
+                dispatch(loadingStatus(false));
+            } else {
                 setSearchText('')
                 setSearchIteam(null)
+                toast.error("Already Added");
+                dispatch(loadingStatus(false));
             }
-            dispatch(loadingStatus(false));
-
         }).catch(() => {
             if (status) {
                 toast.error("Internal Server Error");
@@ -44,9 +50,7 @@ const Home = () => {
         cryptoService.getAlgoList().then((i) => {
             setCryptoList(i?.data?.data)
             dispatch(loadingStatus(false));
-
         }).catch(() => {
-            // toast.error("Internal Server Error");
             dispatch(loadingStatus(false));
         })
 
@@ -54,17 +58,13 @@ const Home = () => {
 
 
     const addCrypto = (id) => {
-
         dispatch(loadingStatus(true));
-        if (list?.findIndex(i => i?.name.trim() === id.name) === -1) {
+        if (list?.findIndex(i => i?.name.trim().toLowerCase() === id.name.toLowerCase()) === -1) {
             getDetailApiCall(id, true)
         } else {
             toast.error("Already Added");
             dispatch(loadingStatus(false));
-
         }
-
-
     }
 
     const handleOnSearch = (string, results) => {
@@ -72,7 +72,6 @@ const Home = () => {
     }
 
     const handleOnSelect = (item) => {
-
         setSearchIteam(item?.data)
     }
 
@@ -103,8 +102,6 @@ const Home = () => {
                                 borderRadius: ' 15px',
                             }}
                         />
-
-
                     </div>
                     <div className="search-action">
                         <button type="button" onClick={() => addCryptoToList()} className="btn btn-primary ">Compare Now</button>
@@ -123,7 +120,7 @@ const Home = () => {
                                 <td>
                                     <div className="value-pairs">
                                         <div className="value-label">Hash</div>
-                                        <span className="result">{i?.algo}</span>
+                                        <span className="result">{i?.hash}</span>
                                     </div>
                                 </td>
                                 <td>

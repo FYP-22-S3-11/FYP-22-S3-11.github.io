@@ -1,1 +1,2 @@
-from api.serializers.serializers import CryptoSerializer
+from api.serializers.coinSerializer import CoinSerializer
+from api.serializers.hashSerializers import CryptoSerializer
