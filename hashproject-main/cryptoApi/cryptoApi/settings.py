@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 from decouple import config
+import environ
+env = environ.Env()
+
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -96,11 +100,11 @@ WSGI_APPLICATION = 'cryptoApi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'crytopcompare',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
-        'PORT': '3306'
+        'NAME': env("DATABASE_NAME"),
+        'USER': env("DATABASE_USER"),
+        'PASSWORD': env("DATABASE_PASSWORD"),
+        'HOST': env("DATABASE_HOST"),
+        'PORT': env("DATABASE_PORT")
     }
 }
 
@@ -151,26 +155,9 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# save Celery task results in Django's database
-CELERY_RESULT_BACKEND = "django-db"
 
-# This configures Redis as the datastore between Django + Celery
-CELERY_BROKER_URL = config('CELERY_BROKER_REDIS_URL', default='redis://localhost:6379')
-# if you out to use os.environ the config is:
-# CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_REDIS_URL', 'redis://localhost:6379')
-
-
-# this allows you to schedule items in the Django admin.
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
-
-CELERY_ACCEPT_CONTENT = ['json', 'pickle']
-CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_BROKER_URL=env("REDIS_SERVER")
+CELERY_RESULT_BACKEND=env("REDIS_SERVER")
+CELERY_ACCEPT_CONTENT=['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
-CELERY_WORKER_PREFETCH_MULTIPLIER = 0
-# To restart worker processes after every task
-BROKER_URL = config('CELERY_BROKER_REDIS_URL', default='redis://localhost:6379')
-BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}  # 1 hour.
-CELERY_RESULT_BACKEND = config('CELERY_BROKER_REDIS_URL', default='redis://localhost:6379')
-CELERY_IMPORTS = (
-    'api.tasks',
-)
+CELERY_TASK_SERIALIZER = 'json'

@@ -8,4 +8,4 @@ class ApiConfig(AppConfig):
     def ready(self):
         # Import celery app now that Django is mostly ready.
         # This initializes Celery and autodiscovers tasks
-        import cryptoApi.celery_app
+        import cryptoApi.celery

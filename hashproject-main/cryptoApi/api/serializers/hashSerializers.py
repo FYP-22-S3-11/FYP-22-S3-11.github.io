@@ -6,4 +6,4 @@ class CryptoSerializer(serializers.ModelSerializer):
  
     class Meta:
         model = Crypto
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'type')
