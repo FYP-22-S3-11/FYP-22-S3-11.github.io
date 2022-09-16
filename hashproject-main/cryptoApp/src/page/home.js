@@ -120,7 +120,7 @@ const Home = () => {
                                 <td>
                                     <div className="value-pairs">
                                         <div className="value-label">Hash</div>
-                                        <span className="result">{i?.hash}</span>
+                                        <span className="result">{i?.algo}</span>
                                     </div>
                                 </td>
                                 <td>
