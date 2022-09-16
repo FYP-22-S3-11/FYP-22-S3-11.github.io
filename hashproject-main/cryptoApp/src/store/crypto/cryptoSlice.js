@@ -1,28 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 import cryptoService from "../../services/cryptoService";
 import { loadingStatus } from "../global/globalSlice";
+import { toast } from "react-toastify";
 
-
-export const getCryptoList = () => async (dispatch) => {
+export const getCryptoDetail = (param, status = true) => async (dispatch) => {
 	dispatch(loadingStatus(true));
 	return cryptoService
-		.getCryptoList()
-		.then(async (res) => {
-			dispatch(cryptoSuccess(res?.data));
-			return dispatch(loadingStatus(false));
-		})
-		.catch((error) => {
-			dispatch(loadingStatus(false));
-			return dispatch(cryptoError(error));
-		});
-};
-
-export const getCryptoDetail = (param) => async (dispatch) => {
-	dispatch(loadingStatus(true));
-	return cryptoService
-		.getCryptoDetail(param)
+		.getCoinDetail(param)
 		.then(async (res) => {
 			dispatch(cryptoDetailSuccess(res?.data));
+			if(status) {
+				toast.success("Add successfully")
+			}
 			return dispatch(loadingStatus(false));
 		})
 		.catch((error) => {
@@ -31,11 +20,8 @@ export const getCryptoDetail = (param) => async (dispatch) => {
 		});
 };
 
-
-
 const initialState = {
 	success: false,
-	cryptoList: null,
 	cryptoDetail: null
 };
 
@@ -43,19 +29,9 @@ const cryptoSlice = createSlice({
 	name: "crypto",
 	initialState,
 	reducers: {
-		cryptoSuccess: (state, action) => {
-			state.success = true;
-			state.cryptoList = action.payload;
-		},
-
 		cryptoDetailSuccess: (state, action) => {
 			state.success = true;
 			state.cryptoDetail = action.payload;
-		},
-
-		cryptoError: (state, action) => {
-			state.success = false;
-			state.cryptoList = null;
 		},
 		cryptoDetailError: (state, action) => {
 			state.success = false;
@@ -66,11 +42,8 @@ const cryptoSlice = createSlice({
 });
 
 export const {
-	cryptoSuccess,
-	cryptoError,
 	cryptoDetailSuccess,
 	cryptoDetailError
-
 } = cryptoSlice.actions;
 
 export default cryptoSlice.reducer;

@@ -1,66 +1,61 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import Table from 'react-bootstrap/Table';
-// import { getCryptoList, } from "../store/crypto/cryptoSlice";
+import { getHashList, } from "../store/hash/hashSlice";
 import { loadingStatus } from "../store/global/globalSlice";
-import cryptoService from "../services/cryptoService";
+import { getCryptoDetail, cryptoDetailSuccess } from "../store/crypto/cryptoSlice"
 
 /**
  * @returns html
  */
 const Home = () => {
     const dispatch = useDispatch();
-
-    const [cryptoList, setCryptoList] = useState([])
+    const hashlist = useSelector(({ hash }) => hash?.hashList);
+    const cryptoDetail = useSelector(({ crypto }) => crypto?.cryptoDetail)
     const [list, selectedList] = useState([])
     const [searchText, setSearchText] = useState('')
     const [searchIteam, setSearchIteam] = useState(null)
-
-    const getDetailApiCall = useCallback((id, status = false) => {
-        cryptoService.getCoinDetail(id).then((i) => {
-            if (list?.findIndex(item => i?.data?.data?.name.trim().toLowerCase() === item.name.toLowerCase()) === -1) {
-                selectedList([...list, i?.data?.data])
-                if (status) {
-                    toast.success("Add successfully")
-                    setSearchText('')
-                    setSearchIteam(null)
-                }
-                dispatch(loadingStatus(false));
-            } else {
-                setSearchText('')
-                setSearchIteam(null)
-                toast.error("Already Added");
-                dispatch(loadingStatus(false));
-            }
-        }).catch(() => {
-            if (status) {
-                toast.error("Internal Server Error");
-            }
-            dispatch(loadingStatus(false));
-        })
-    }, [dispatch, list])
+    const [status, setStatus] = useState(true)
 
     useEffect(() => {
-        dispatch(loadingStatus(true));
-        if (list?.findIndex(i => i?.name.trim() === "Bitcoin") === -1) {
-            getDetailApiCall({ name: 'Bitcoin', type: 'coin' })
-        }
-        cryptoService.getAlgoList().then((i) => {
-            setCryptoList(i?.data?.data)
-            dispatch(loadingStatus(false));
-        }).catch(() => {
-            dispatch(loadingStatus(false));
-        })
+        dispatch(cryptoDetailSuccess(null))
+        selectedList([])
+    }, [dispatch])
 
-    }, [dispatch, getDetailApiCall, list]);
+    useEffect(() => {
+        if (cryptoDetail) {
+            selectedList([...list, {
+                name: cryptoDetail?.data?.name,
+                percent: cryptoDetail?.data?.percent,
+                symbol: cryptoDetail?.data?.symbol,
+                marketcap: cryptoDetail?.data?.marketcap,
+                hash: cryptoDetail?.data?.hash,
+                img: cryptoDetail?.data?.img,
+                volume: cryptoDetail?.data?.volume
+            }])
+
+            setSearchText('')
+            setSearchIteam(null)
+            dispatch(cryptoDetailSuccess(null))
+        }
+    }, [dispatch, cryptoDetail, list])
+
+    useEffect(() => {
+        dispatch(getHashList())
+    }, [dispatch])
+
+    useEffect(() => {
+        dispatch(getCryptoDetail({ name: 'Bitcoin', type: 'coin' }, false))
+        setStatus(false)
+    }, [dispatch, status]);
 
 
     const addCrypto = (id) => {
         dispatch(loadingStatus(true));
-        if (list?.findIndex(i => i?.name.trim().toLowerCase() === id.name.toLowerCase()) === -1) {
-            getDetailApiCall(id, true)
+        if (list?.findIndex(i => (i?.name?.trim().toLowerCase() === id.name.toLowerCase() || i?.hash?.trim().toLowerCase() === id.name.toLowerCase())) === -1) {
+            dispatch(getCryptoDetail(id))
         } else {
             toast.error("Already Added");
             dispatch(loadingStatus(false));
@@ -83,23 +78,19 @@ const Home = () => {
 
     return (
         <div className="">
-
             <div className="comparsion-tbl-wrap">
-
                 <div className="searchbar-wrapper">
                     <h2 className="text-light">Comparsion Table</h2>
-
                     <div className="search-box" >
-
                         <ReactSearchAutocomplete
-                            items={cryptoList?.map((i, index) => ({ id: index, data: i, name: i.name }))}
+                            items={hashlist?.data?.map((i, index) => ({ id: index, data: i, name: i?.name?.toLowerCase() }))}
                             inputSearchString={searchText}
                             onSearch={handleOnSearch}
                             onSelect={handleOnSelect}
                             autoFocus
                             style={{
                                 border: '1px solid #D1D1D1',
-                                borderRadius: ' 15px',
+                                borderRadius: '15px',
                             }}
                         />
                     </div>
@@ -107,9 +98,20 @@ const Home = () => {
                         <button type="button" onClick={() => addCryptoToList()} className="btn btn-primary ">Compare Now</button>
                     </div>
                 </div>
-                <Table className="comparsion-table  text-light">
+                <Table className="comparsion-table text-light">
                     <tbody>
-                        {list?.map((i, index) => (
+
+                        {/* obj.arr.filter((value, index, self) =>
+  index === self.findIndex((t) => (
+    t.place === value.place && t.name === value.name
+  ))
+) */}
+
+                        {list?.filter((value, index, self) =>
+                            index === self.findIndex((t) => (
+                                t.name === value.name
+                            ))
+                        )?.map((i, index) => (
                             <tr key={index}>
                                 <td>{index + 1} <img width={20} src={i?.img} alt={i?.name} /> <span className="result">{i?.name}</span></td>
                                 <td>
@@ -120,12 +122,12 @@ const Home = () => {
                                 <td>
                                     <div className="value-pairs">
                                         <div className="value-label">Hash</div>
-                                        <span className="result">{i?.algo}</span>
+                                        <span className="result">{i?.hash}</span>
                                     </div>
                                 </td>
                                 <td>
                                     <div className="value-pairs">
-                                        <div className="value-label">Market Cap (24h)</div>
+                                        <div className="value-label">Market Cap</div>
                                         <span className="result">{i?.marketcap}</span>
                                     </div>
                                 </td>
@@ -138,9 +140,7 @@ const Home = () => {
                                     </div>
                                 </td>
                             </tr>
-
                         ))}
-
                     </tbody>
                 </Table>
             </div>

@@ -9,8 +9,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { PersistGate } from "redux-persist/integration/react";
 
 import { store, persistor } from "./store";
-import Interceptor from "./utils/interceptors";
-Interceptor(store);
+// import Interceptor from "./utils/interceptors";
+// Interceptor(store);
 
 const App = () => {
   return (

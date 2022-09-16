@@ -15,13 +15,12 @@ import Home from "../page/home";
  * @returns Route
  */
 
-function AppRoutes() {
-    const routes = useRoutes(
-        [
-            { path: '/', element: <Home /> },
-        ]
-    )
-    return routes;
+const AppRoutes = () => {
+    const routes = [
+        { path: '/', element: <Home /> },
+    ]
+
+    return useRoutes(routes);
 }
 
 const IndexRoute = () => {

@@ -1,6 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import global from './global/globalSlice';
 import crypto from './crypto/cryptoSlice';
+import hash from './hash/hashSlice'
 
 /**
  * Define Root reducer
@@ -10,7 +11,8 @@ import crypto from './crypto/cryptoSlice';
 const createReducer = asyncReducers => (state, action) => {
 	const combinedReducer = combineReducers({
 		global,
-		crypto
+		crypto,
+		hash
 	});
 
 
