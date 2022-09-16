@@ -163,3 +163,14 @@ CELERY_BROKER_URL = config('CELERY_BROKER_REDIS_URL', default='redis://localhost
 # this allows you to schedule items in the Django admin.
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
 
+CELERY_ACCEPT_CONTENT = ['json', 'pickle']
+CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_WORKER_PREFETCH_MULTIPLIER = 0
+# To restart worker processes after every task
+BROKER_URL = config('CELERY_BROKER_REDIS_URL', default='redis://localhost:6379')
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}  # 1 hour.
+CELERY_RESULT_BACKEND = config('CELERY_BROKER_REDIS_URL', default='redis://localhost:6379')
+CELERY_IMPORTS = (
+    'api.tasks',
+)

@@ -1,0 +1,139 @@
+[2022-09-09 15:28:11,889: INFO/MainProcess] Connected to redis://localhost:6379//
+[2022-09-09 15:28:11,898: INFO/MainProcess] mingle: searching for neighbors
+[2022-09-09 15:28:12,660: INFO/SpawnPoolWorker-1] child process 10308 calling self.run()
+[2022-09-09 15:28:12,662: INFO/SpawnPoolWorker-3] child process 2656 calling self.run()
+[2022-09-09 15:28:12,671: INFO/SpawnPoolWorker-2] child process 6476 calling self.run()
+[2022-09-09 15:28:12,674: INFO/SpawnPoolWorker-4] child process 22076 calling self.run()
+[2022-09-09 15:28:12,922: INFO/MainProcess] mingle: all alone
+[2022-09-09 15:28:12,939: WARNING/MainProcess] F:\seasia\scrapping\github\Crypto-compare\cryptoApi\djangoenv\lib\site-packages\celery\fixups\django.py:203: UserWarning: Using settings.DEBUG leads to a memory
+            leak, never use this setting in production environments!
+  warnings.warn('''Using settings.DEBUG leads to a memory
+
+[2022-09-09 15:28:12,948: INFO/MainProcess] celery@DESKTOP-8NIEV9F ready.
+[2022-09-09 15:28:13,204: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[68335d1c-e9da-4fbd-80a5-abca80ebb446] received
+[2022-09-09 15:28:13,207: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[f098e9ae-86c9-489b-b398-7fcb2786cc38] received
+[2022-09-09 15:28:13,209: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[2bf1ee4f-42dc-4eb3-8c99-39e131142160] received
+[2022-09-09 15:28:13,210: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[4f43ade1-3982-4cab-8ead-916a72d349ef] received
+[2022-09-09 15:28:13,212: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[9eedf18f-bcea-4798-8bc8-fcc2f06932e7] received
+[2022-09-09 15:28:15,391: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[aa531340-4ebf-4630-aac6-bead930ef209] received
+[2022-09-09 15:28:15,394: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[990138c5-945b-40df-a821-50ffc87f441a] received
+[2022-09-09 15:28:15,396: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[defd4daf-ed11-451c-88f2-f7cafd2e1e09] received
+[2022-09-09 15:28:15,398: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[b4f2c113-aab1-465e-b606-808593682c89] received
+[2022-09-09 15:28:16,157: INFO/SpawnPoolWorker-7] child process 2808 calling self.run()
+[2022-09-09 15:28:16,158: INFO/SpawnPoolWorker-8] child process 20020 calling self.run()
+[2022-09-09 15:28:16,169: INFO/SpawnPoolWorker-5] child process 3412 calling self.run()
+[2022-09-09 15:28:16,206: INFO/SpawnPoolWorker-6] child process 22224 calling self.run()
+[2022-09-09 15:28:18,703: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[82724779-7daa-4a38-a5b8-7fe1f5b16712] received
+[2022-09-09 15:28:18,710: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[d491d7c3-592c-49f8-86f4-5270ce461ba1] received
+[2022-09-09 15:28:18,714: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[172b86a6-8a20-4343-af92-393fbdc42f90] received
+[2022-09-09 15:28:19,357: INFO/SpawnPoolWorker-9] child process 24472 calling self.run()
+[2022-09-09 15:28:19,365: INFO/SpawnPoolWorker-10] child process 16260 calling self.run()
+[2022-09-09 15:28:19,388: INFO/SpawnPoolWorker-11] child process 15204 calling self.run()
+[2022-09-09 15:28:21,184: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[ab8b3d01-b5f3-4964-8233-432f71b0ad2f] received
+[2022-09-09 15:28:21,190: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[f523125e-23de-4eb6-934d-a0c73cc33b79] received
+[2022-09-09 15:28:21,734: INFO/SpawnPoolWorker-12] child process 20648 calling self.run()
+[2022-09-09 15:28:21,738: INFO/SpawnPoolWorker-13] child process 20024 calling self.run()
+[2022-09-09 15:28:23,608: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[70dfd946-7ce8-4124-bbb2-a744b81136ab] received
+[2022-09-09 15:28:23,610: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[add5d520-6628-4a88-b270-982846f87739] received
+[2022-09-09 15:28:24,185: INFO/SpawnPoolWorker-14] child process 21492 calling self.run()
+[2022-09-09 15:28:24,193: INFO/SpawnPoolWorker-15] child process 244 calling self.run()
+[2022-09-09 15:28:26,065: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[5077cec3-9864-4c05-b1d6-643674907acd] received
+[2022-09-09 15:28:26,068: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[9be3190f-4c7a-4a00-8b9b-eda71442de9a] received
+[2022-09-09 15:28:26,626: INFO/SpawnPoolWorker-17] child process 21848 calling self.run()
+[2022-09-09 15:28:26,626: INFO/SpawnPoolWorker-16] child process 14148 calling self.run()
+[2022-09-09 15:28:28,498: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[641c424a-9954-4e8f-b363-8e9f50c17fba] received
+[2022-09-09 15:28:28,943: INFO/SpawnPoolWorker-18] child process 16008 calling self.run()
+[2022-09-09 15:28:30,114: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[ffbc90de-377f-484a-ab75-8c92f46cb6fb] received
+[2022-09-09 15:28:30,562: INFO/SpawnPoolWorker-19] child process 7164 calling self.run()
+[2022-09-09 15:39:03,551: INFO/MainProcess] Connected to redis://localhost:6379//
+[2022-09-09 15:39:03,561: INFO/MainProcess] mingle: searching for neighbors
+[2022-09-09 15:39:04,215: INFO/SpawnPoolWorker-1] child process 18964 calling self.run()
+[2022-09-09 15:39:04,235: INFO/SpawnPoolWorker-2] child process 2808 calling self.run()
+[2022-09-09 15:39:04,275: INFO/SpawnPoolWorker-4] child process 15208 calling self.run()
+[2022-09-09 15:39:04,309: INFO/SpawnPoolWorker-3] child process 6412 calling self.run()
+[2022-09-09 15:39:04,589: INFO/MainProcess] mingle: all alone
+[2022-09-09 15:39:04,610: WARNING/MainProcess] F:\seasia\scrapping\github\Crypto-compare\cryptoApi\djangoenv\lib\site-packages\celery\fixups\django.py:203: UserWarning: Using settings.DEBUG leads to a memory
+            leak, never use this setting in production environments!
+  warnings.warn('''Using settings.DEBUG leads to a memory
+
+[2022-09-09 15:39:04,610: INFO/MainProcess] celery@DESKTOP-8NIEV9F ready.
+[2022-09-09 15:39:04,924: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[a306b38f-1cb6-4730-89a6-b533b46b70dd] received
+[2022-09-09 15:39:04,926: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[553e51d2-cd42-4eed-a4f6-390631a5f176] received
+[2022-09-09 15:39:04,928: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[eb3b33ef-8c99-4063-afaa-ea3033310399] received
+[2022-09-09 15:39:04,930: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[a7b0f78b-0170-45de-892b-b5211bb69c7d] received
+[2022-09-09 15:39:04,932: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[b88d37ab-5ced-4812-be69-3af3c219fe05] received
+[2022-09-09 15:39:06,250: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[b5af1737-9c2f-41b5-a963-a71260a4d0cc] received
+[2022-09-09 15:39:06,938: INFO/SpawnPoolWorker-5] child process 20220 calling self.run()
+[2022-09-09 15:39:07,061: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[cc635ebc-0762-4596-bc08-63d67a674854] received
+[2022-09-09 15:39:07,063: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[1eb5c40f-adf2-44a9-a532-7df89fc841c3] received
+[2022-09-09 15:39:07,650: INFO/SpawnPoolWorker-6] child process 19612 calling self.run()
+[2022-09-09 15:39:07,656: INFO/SpawnPoolWorker-7] child process 23236 calling self.run()
+[2022-09-09 15:39:08,688: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[c31bee8d-cf93-467c-b686-c311f60b0d1e] received
+[2022-09-09 15:39:09,227: INFO/SpawnPoolWorker-8] child process 18664 calling self.run()
+[2022-09-09 15:39:09,499: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[3e4e1ec5-6249-4a51-a913-63faa0a6f6c6] received
+[2022-09-09 15:39:09,501: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[6e96c129-02b8-43e9-8d56-ea428a509458] received
+[2022-09-09 15:39:10,433: INFO/SpawnPoolWorker-10] child process 20024 calling self.run()
+[2022-09-09 15:39:10,442: INFO/SpawnPoolWorker-9] child process 22108 calling self.run()
+[2022-09-09 15:39:11,932: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[04d001d2-ba47-4d29-8e8b-1f9bf109a49a] received
+[2022-09-09 15:39:12,506: INFO/SpawnPoolWorker-11] child process 2900 calling self.run()
+[2022-09-09 15:39:14,358: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[bc85305d-f77f-4dac-a12b-ff82c72ad0f6] received
+[2022-09-09 15:39:14,833: INFO/SpawnPoolWorker-12] child process 23336 calling self.run()
+[2022-09-09 15:39:16,793: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[1e07b4ed-1a35-4f96-a02d-cafd757a7d99] received
+[2022-09-09 15:39:17,271: INFO/SpawnPoolWorker-13] child process 23500 calling self.run()
+[2022-09-09 16:03:22,018: INFO/MainProcess] Connected to redis://localhost:6379//
+[2022-09-09 16:03:22,021: INFO/MainProcess] mingle: searching for neighbors
+[2022-09-09 16:03:22,665: INFO/SpawnPoolWorker-3] child process 15400 calling self.run()
+[2022-09-09 16:03:22,683: INFO/SpawnPoolWorker-1] child process 9024 calling self.run()
+[2022-09-09 16:03:22,765: INFO/SpawnPoolWorker-2] child process 4652 calling self.run()
+[2022-09-09 16:03:22,798: INFO/SpawnPoolWorker-4] child process 16344 calling self.run()
+[2022-09-09 16:03:23,038: INFO/MainProcess] mingle: all alone
+[2022-09-09 16:03:23,065: WARNING/MainProcess] F:\seasia\scrapping\github\Crypto-compare\cryptoApi\djangoenv\lib\site-packages\celery\fixups\django.py:203: UserWarning: Using settings.DEBUG leads to a memory
+            leak, never use this setting in production environments!
+  warnings.warn('''Using settings.DEBUG leads to a memory
+
+[2022-09-09 16:03:23,066: INFO/MainProcess] celery@DESKTOP-8NIEV9F ready.
+[2022-09-09 16:03:23,302: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[ab2af825-3035-4f8a-b7ce-eaabdfb3d1af] received
+[2022-09-09 16:03:23,304: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[b9e87340-e7eb-4cc3-a6bd-b9c3448b7fc7] received
+[2022-09-09 16:03:23,306: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[427b209d-419e-4c71-9b0d-e8cedfcf84bd] received
+[2022-09-09 16:03:23,307: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[78f29970-99fd-43c5-9ed9-2a8ca3ef11f4] received
+[2022-09-09 16:03:23,309: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[70e2184b-7159-4da9-8d77-50adef037fd8] received
+[2022-09-09 16:03:25,575: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[57815d2f-0154-4244-8e48-f0c681bed702] received
+[2022-09-09 16:03:25,577: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[20e59aff-3a0b-4778-83f4-b62a1bc9b095] received
+[2022-09-09 16:03:25,581: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[4f0b3b9b-32f4-4f50-b103-8ff70593d823] received
+[2022-09-09 16:03:26,192: INFO/SpawnPoolWorker-7] child process 19788 calling self.run()
+[2022-09-09 16:03:26,208: INFO/SpawnPoolWorker-5] child process 15520 calling self.run()
+[2022-09-09 16:03:26,427: INFO/SpawnPoolWorker-6] child process 14948 calling self.run()
+[2022-09-09 16:03:28,046: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[345fbfa4-40eb-4667-88bd-34faa53a11ec] received
+[2022-09-09 16:03:28,049: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[b973db89-9b74-46f9-9bc1-40a8ef16a183] received
+[2022-09-09 16:03:28,052: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[3f254d56-267e-49dc-8a1b-66a14cd316aa] received
+[2022-09-09 16:03:28,655: INFO/SpawnPoolWorker-8] child process 16456 calling self.run()
+[2022-09-09 16:03:28,656: INFO/SpawnPoolWorker-10] child process 22996 calling self.run()
+[2022-09-09 16:03:28,848: INFO/SpawnPoolWorker-9] child process 16580 calling self.run()
+[2022-09-09 16:03:30,511: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[eaa43834-8fa1-4590-a773-cea901668713] received
+[2022-09-09 16:03:30,518: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[c34ead9d-580c-4647-9c25-dbde42722cfd] received
+[2022-09-09 16:03:30,522: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[e931122b-23fb-447d-8b1e-e7719df79507] received
+[2022-09-09 16:03:31,760: INFO/SpawnPoolWorker-11] child process 19148 calling self.run()
+[2022-09-09 16:03:31,835: INFO/SpawnPoolWorker-13] child process 24500 calling self.run()
+[2022-09-09 16:03:32,075: INFO/SpawnPoolWorker-12] child process 21724 calling self.run()
+[2022-09-09 16:03:34,595: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[c0fe67d2-11bb-4ffd-b9f3-8d252e5761e3] received
+[2022-09-09 16:03:34,598: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[3a453dfb-e575-4594-899e-baa0ac2506e2] received
+[2022-09-09 16:03:35,405: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[db377cf8-a904-4569-9dfa-0ed21c4fe324] received
+[2022-09-09 16:03:35,492: INFO/SpawnPoolWorker-14] child process 16032 calling self.run()
+[2022-09-09 16:03:35,691: INFO/SpawnPoolWorker-15] child process 17968 calling self.run()
+[2022-09-09 16:03:36,146: INFO/SpawnPoolWorker-16] child process 23620 calling self.run()
+[2022-09-09 16:03:37,840: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[4765ad9e-2699-420c-94c7-a68eed3df0c4] received
+[2022-09-09 16:03:38,666: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[f3dc4cc0-b1e1-4ec4-8794-809d23836b46] received
+[2022-09-09 16:03:38,669: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[535f6841-4d66-48ec-85a4-93d8c15e30c6] received
+[2022-09-09 16:03:38,724: INFO/SpawnPoolWorker-17] child process 4072 calling self.run()
+[2022-09-09 16:03:39,368: INFO/SpawnPoolWorker-18] child process 8500 calling self.run()
+[2022-09-09 16:03:39,388: INFO/SpawnPoolWorker-19] child process 14748 calling self.run()
+[2022-09-09 16:03:41,119: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[63e2c7e4-bef9-4542-878f-f24d0658fad6] received
+[2022-09-09 16:03:41,124: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[628a7515-3b70-4170-9797-a9a16abb771c] received
+[2022-09-09 16:03:42,012: INFO/SpawnPoolWorker-20] child process 1440 calling self.run()
+[2022-09-09 16:03:42,013: INFO/SpawnPoolWorker-21] child process 22860 calling self.run()
+[2022-09-09 16:03:45,214: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[f7496e63-40a1-484b-b3e5-241ebd10dbc5] received
+[2022-09-09 16:03:46,680: INFO/SpawnPoolWorker-22] child process 13788 calling self.run()
+[2022-09-09 16:03:49,259: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[162bb358-f18b-4221-97a9-8e2b3508e41e] received
+[2022-09-09 16:03:50,087: INFO/SpawnPoolWorker-23] child process 22156 calling self.run()
+[2022-09-09 16:03:52,507: INFO/MainProcess] Task api.tasks.get_list_coin_celery_demo[64ce48d5-1b25-4fab-8cdf-3af43a1d5761] received
+[2022-09-09 16:03:53,272: INFO/SpawnPoolWorker-24] child process 22720 calling self.run()
