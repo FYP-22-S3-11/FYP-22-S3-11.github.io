@@ -1,8 +1,8 @@
 
 ## The first thing to do is to clone the repository:
 
-$ git clone https://github.com/Ronda4/Crypto-compare.git
-$ cd Crypto-compare/cryptoApp
+$ git clone https://github.com/kazmerv/hashproject.git
+$ cd hashproject/cryptoApp
 
 ## Available Scripts
 
