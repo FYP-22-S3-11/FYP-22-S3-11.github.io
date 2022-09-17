@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 import io
 import os
@@ -122,7 +122,7 @@ prototypes = [
     Prototype(
         regex=re.compile(r'^[a-z0-9]{34}$', re.IGNORECASE),
         modes=[
-            HashInfo(name='CryptoCurrency(Adress)')]),
+            HashInfo(name='CryptoCurrency(Address)')]),
     Prototype(
         regex=re.compile(r'^[a-f0-9]{40}(:.+)?$', re.IGNORECASE),
         modes=[
@@ -148,11 +148,11 @@ prototypes = [
         modes=[
             HashInfo(name='CryptoCurrency(PrivateKey)')]),
     Prototype(
-        regex=re.compile(r'^{ssha1}[0-9]{2}\$[a-z0-9$\/.]{44}$', re.IGNORECASE),
+        regex=re.compile(r'^{ssha1}[\d]{2}\$[a-z0-9$\/.]{44}$', re.IGNORECASE),
         modes=[
             HashInfo(name='AIX(ssha1)')]),
     Prototype(
-        regex=re.compile(r'^(\$md5,rounds=[0-9]+\$|\$md5\$rounds=[0-9]+\$|\$md5\$)[a-z0-9\/.]{0,16}(\$|\$\$)[a-z0-9\/.]{22}$', re.IGNORECASE),
+        regex=re.compile(r'^(\$md5,rounds=[\d]+\$|\$md5\$rounds=[\d]+\$|\$md5\$)[a-z0-9\/.]{0,16}(\$|\$\$)[a-z0-9\/.]{22}$', re.IGNORECASE),
         modes=[
             HashInfo(name='Sun MD5 Crypt')]),
     Prototype(
@@ -164,13 +164,13 @@ prototypes = [
             HashInfo(name='Skein-256(224)', ),
             HashInfo(name='Skein-512(224)')]),
     Prototype(
-        regex=re.compile(r'^(\$2[axy]|\$2)\$[0-9]{2}\$[a-z0-9\/.]{53}$', re.IGNORECASE),
+        regex=re.compile(r'^(\$2[axy]|\$2)\$[\d]{2}\$[a-z0-9\/.]{53}$', re.IGNORECASE),
         modes=[
             HashInfo(name='Blowfish(OpenBSD)'),
             HashInfo(name='Woltlab Burning Board 4.x'),
             HashInfo(name='bcrypt')]),
     Prototype(
-        regex=re.compile(r'^\$bcrypt-sha256\$(2[axy]|2)\,[0-9]+\$[a-z0-9\/.]{22}\$[a-z0-9\/.]{31}$', re.IGNORECASE),
+        regex=re.compile(r'^\$bcrypt-sha256\$(2[axy]|2)\,[\d]+\$[a-z0-9\/.]{22}\$[a-z0-9\/.]{31}$', re.IGNORECASE),
         modes=[
             HashInfo(name='bcrypt(SHA-256)')]),
     Prototype(
@@ -191,12 +191,12 @@ prototypes = [
             HashInfo(name='Ventrilo'),
             HashInfo(name='HMAC-SHA256 (key = $pass)'),]),
     Prototype(
-        regex=re.compile(r'^(\$chap\$0\*)?[a-f0-9]{32}[\*:][a-f0-9]{32}(:[0-9]{2})?$', re.IGNORECASE),
+        regex=re.compile(r'^(\$chap\$0\*)?[a-f0-9]{32}[\*:][a-f0-9]{32}(:[\d]{2})?$', re.IGNORECASE),
         modes=[
             HashInfo(name='MD5(Chap)'),
             HashInfo(name='iSCSI CHAP Authentication')]),
     Prototype(
-        regex=re.compile(r'^{ssha256}[0-9]{2}\$[a-z0-9$\/.]{60}$', re.IGNORECASE),
+        regex=re.compile(r'^{ssha256}[\d]{2}\$[a-z0-9$\/.]{60}$', re.IGNORECASE),
         modes=[
             HashInfo(name='AIX(ssha256)')]),
     Prototype(
@@ -216,7 +216,7 @@ prototypes = [
             HashInfo(name='SSHA-512(Base64)'),
             HashInfo(name='LDAP(SSHA-512)')]),
     Prototype(
-        regex=re.compile(r'^{ssha512}[0-9]{2}\$[a-z0-9\/.]{16,48}\$[a-z0-9\/.]{86}$', re.IGNORECASE),
+        regex=re.compile(r'^{ssha512}[\d]{2}\$[a-z0-9\/.]{16,48}\$[a-z0-9\/.]{86}$', re.IGNORECASE),
         modes=[
             HashInfo(name='AIX(ssha512)')]),
     Prototype(
@@ -235,7 +235,7 @@ prototypes = [
         modes=[
             HashInfo(name='Skein-1024')]),
     Prototype(
-        regex=re.compile(r'^\$5\$(rounds=[0-9]+\$)?[a-z0-9\/.]{0,16}\$[a-z0-9\/.]{43}$', re.IGNORECASE),
+        regex=re.compile(r'^\$5\$(rounds=[\d]+\$)?[a-z0-9\/.]{0,16}\$[a-z0-9\/.]{43}$', re.IGNORECASE),
         modes=[
             HashInfo(name='SHA-256 Crypt')]),
     Prototype(
@@ -247,27 +247,27 @@ prototypes = [
         modes=[
             HashInfo(name='IPMI2 RAKP HMAC-SHA1')]),
     Prototype(
-        regex=re.compile(r'^\$sha1\$[0-9]+\$[a-z0-9\/.]{0,64}\$[a-z0-9\/.]{28}$', re.IGNORECASE),
+        regex=re.compile(r'^\$sha1\$[\d]+\$[a-z0-9\/.]{0,64}\$[a-z0-9\/.]{28}$', re.IGNORECASE),
         modes=[
             HashInfo(name='SHA-1 Crypt')]),
     Prototype(
-        regex=re.compile(r'^\$pbkdf2(-sha1)?\$[0-9]+\$[a-z0-9\/.]+\$[a-z0-9\/.]{27}$', re.IGNORECASE),
+        regex=re.compile(r'^\$pbkdf2(-sha1)?\$[\d]+\$[a-z0-9\/.]+\$[a-z0-9\/.]{27}$', re.IGNORECASE),
         modes=[
             HashInfo(name='PBKDF2-SHA1(Generic)')]),
     Prototype(
-        regex=re.compile(r'^\$pbkdf2-sha256\$[0-9]+\$[a-z0-9\/.]+\$[a-z0-9\/.]{43}$', re.IGNORECASE),
+        regex=re.compile(r'^\$pbkdf2-sha256\$[\d]+\$[a-z0-9\/.]+\$[a-z0-9\/.]{43}$', re.IGNORECASE),
         modes=[
             HashInfo(name='PBKDF2-SHA256(Generic)')]),
     Prototype(
-        regex=re.compile(r'^\$pbkdf2-sha512\$[0-9]+\$[a-z0-9\/.]+\$[a-z0-9\/.]{86}$', re.IGNORECASE),
+        regex=re.compile(r'^\$pbkdf2-sha512\$[\d]+\$[a-z0-9\/.]+\$[a-z0-9\/.]{86}$', re.IGNORECASE),
         modes=[
             HashInfo(name='PBKDF2-SHA512(Generic)')]),
     Prototype(
-        regex=re.compile(r'^\$p5k2\$[0-9]+\$[a-z0-9\/+=-]+\$[a-z0-9\/+-]{27}=$', re.IGNORECASE),
+        regex=re.compile(r'^\$p5k2\$[\d]+\$[a-z0-9\/+=-]+\$[a-z0-9\/+-]{27}=$', re.IGNORECASE),
         modes=[
             HashInfo(name='PBKDF2(Cryptacular)')]),
     Prototype(
-        regex=re.compile(r'^\$p5k2\$[0-9]+\$[a-z0-9\/.]+\$[a-z0-9\/.]{32}$', re.IGNORECASE),
+        regex=re.compile(r'^\$p5k2\$[\d]+\$[a-z0-9\/.]+\$[a-z0-9\/.]{32}$', re.IGNORECASE),
         modes=[
             HashInfo(name='PBKDF2(Dwayne Litzenberger)')]),
     Prototype(
@@ -279,7 +279,7 @@ prototypes = [
         modes=[
             HashInfo(name='IKE-PSK SHA1')]),
     Prototype(
-        regex=re.compile(r'^SCRYPT:[0-9]{1,}:[0-9]{1}:[0-9]{1}:[a-z0-9:\/+=]{1,}$', re.IGNORECASE),
+        regex=re.compile(r'^SCRYPT:[\d]+:[\d]{1}:[\d]{1}:[a-z0-9:\/+=]+$', re.IGNORECASE),
         modes=[
             HashInfo(name='scrypt')]),
     Prototype(
@@ -301,7 +301,7 @@ class HashID(object):
         # modification after instantiation
         self.prototypes = list(prototypes)
 
-    def identifyHash(self, phash):
+    def identify_hash(self, phash):
         """
         Returns identified HashInfo
         """
@@ -312,27 +312,26 @@ class HashID(object):
                     yield mode
 
 
-def writeResult(identified_modes, outfile, hashcatMode=False, johnFormat=False, extended=False):
+def write_result(identified_modes, outfile, sysout = None):
     """
-    Write human readable output from identifyHash
+    Write human readable output from identify_hash
     """
     count = 0
     hashTypes = ""
     for mode in identified_modes:
         count += 1
-        hashTypes += u"[+] {0} ".format(mode.name)
-        hashTypes += "\n"
-    outfile.write(hashTypes)
+        hashTypes += f"[+] {mode.name}\n"
+    outfile.write(hashTypes + "\n")
     if count == 0:
-        outfile.write(u"[+] Unknown hash\n")
+        outfile.write(f"[+] Unknown hash\n")
     return (count > 0)
 
 
 def main():
-    usage = "{0} [-h] [-o FILE] [-c COIN] INPUT".format(os.path.basename(__file__))
+    usage = f"{os.path.basename(__file__)} [-h] [-o FILE] [-c COIN] INPUT"
 
     parser = argparse.ArgumentParser(
-        description="Identify the different types of hashes. Default mode is to identify the hash type and write to stdout",
+        description="Identify the different types of hashes. Default mode ONLY identifies the hash type and write to stdout",
         usage=usage,
         add_help=False,
         formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=27)
@@ -363,7 +362,7 @@ def main():
         try:
             outfile = io.open(args.outfile, "w", encoding="utf-8")
         except EnvironmentError:
-            parser.error("Could not open {0}".format(args.output))
+            parser.error(f"Could not open {args.output}")
 
 
     if not args.strings or args.strings[0] == "-":
@@ -373,31 +372,29 @@ def main():
             print("Id: " + str(r.json().get('data').get('id')))
             print("Name: " + r.json().get('data').get('name'))
             print("Hash: " + r.json().get('data').get('hash'))
-        
+            print("=====================================================\n")
+
         while True:
-            line = input("> ")
+            line = input("Hash: ")
             if not line:
                 break
-            outfile.write(u"Analyzing '{0}'\n".format(line.strip()))
-            writeResult(hashID.identifyHash(line), outfile)
+            outfile.write(f"Analyzing '{line.strip()}'\n")
+            write_result(hashID.identify_hash(line), outfile)
             sys.stdout.flush()
     else:
         for string in args.strings:
             if os.path.isfile(string):
                 try:
                     with io.open(string, "r", encoding="utf-8") as infile:
-                        outfile.write("--File '{0}'--\n".format(string))
                         for line in infile:
                             if line.strip():
-                                outfile.write(u"Analyzing '{0}'\n".format(line.strip()))
-                                writeResult(hashID.identifyHash(line), outfile, args.mode, args.john, args.extended)
+                                outfile.write(f"Analyzing '{line.strip()}'\n")
+                                write_result(hashID.identify_hash(line), outfile)
                 except (EnvironmentError, UnicodeDecodeError):
-                    outfile.write("--File '{0}' - could not open--".format(string))
-                else:
-                    outfile.write("--End of file '{0}'--".format(string))
+                    sys.stdout.write(f"Could not open {string}")
             else:
-                outfile.write(u"Analyzing '{0}'\n".format(string.strip()))
-                writeResult(hashID.identifyHash(string), outfile, args.mode, args.john, args.extended)
+                outfile.write(f"Analyzing '{string.strip()}'\n")
+                write_result(hashID.identify_hash(string), outfile)
 
 
 if __name__ == "__main__":
