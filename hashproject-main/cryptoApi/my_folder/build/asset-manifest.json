@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/crytopcompare/static/css/main.0ffc9abf.css",
+    "main.js": "/crytopcompare/static/js/main.d4d5aef0.js",
+    "static/js/787.284a3ba0.chunk.js": "/crytopcompare/static/js/787.284a3ba0.chunk.js",
+    "index.html": "/crytopcompare/index.html",
+    "main.0ffc9abf.css.map": "/crytopcompare/static/css/main.0ffc9abf.css.map",
+    "main.d4d5aef0.js.map": "/crytopcompare/static/js/main.d4d5aef0.js.map",
+    "787.284a3ba0.chunk.js.map": "/crytopcompare/static/js/787.284a3ba0.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0ffc9abf.css",
+    "static/js/main.d4d5aef0.js"
+  ]
+}
