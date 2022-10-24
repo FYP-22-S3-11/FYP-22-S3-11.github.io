@@ -8,10 +8,17 @@ export const getCryptoDetail = (param, status = true) => async (dispatch) => {
 	return cryptoService
 		.getCoinDetail(param)
 		.then(async (res) => {
-			dispatch(cryptoDetailSuccess(res?.data));
-			if(status) {
-				toast.success("Add successfully")
+			if (res?.data?.code === 200) {
+				if (status) {
+					toast.success("Add successfully")
+				}
+				dispatch(cryptoDetailSuccess(res?.data));
+			} else {
+				if (status) {
+					toast.error(res?.data?.message)
+				}
 			}
+
 			return dispatch(loadingStatus(false));
 		})
 		.catch((error) => {

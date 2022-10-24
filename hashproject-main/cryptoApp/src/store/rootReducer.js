@@ -2,6 +2,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 import global from './global/globalSlice';
 import crypto from './crypto/cryptoSlice';
 import hash from './hash/hashSlice'
+import dominance from './dominance/checkDominance'
 
 /**
  * Define Root reducer
@@ -12,7 +13,8 @@ const createReducer = asyncReducers => (state, action) => {
 	const combinedReducer = combineReducers({
 		global,
 		crypto,
-		hash
+		hash,
+		dominance,
 	});
 
 

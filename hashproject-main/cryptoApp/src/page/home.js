@@ -53,6 +53,8 @@ const Home = () => {
 
 
     const addCrypto = (id) => {
+        console.log("searchIteam",id)
+
         dispatch(loadingStatus(true));
         if (list?.findIndex(i => (i?.name?.trim().toLowerCase() === id.name.toLowerCase() || i?.hash?.trim().toLowerCase() === id.name.toLowerCase())) === -1) {
             dispatch(getCryptoDetail(id))
@@ -73,6 +75,8 @@ const Home = () => {
     const addCryptoToList = () => {
         if (searchIteam) {
             addCrypto(searchIteam)
+        } else {
+            addCrypto({ name: searchText, type: 'coin' })
         }
     }
 
@@ -92,6 +96,7 @@ const Home = () => {
                                 border: '1px solid #D1D1D1',
                                 borderRadius: '15px',
                             }}
+                            className="search-abc"
                         />
                     </div>
                     <div className="search-action">
