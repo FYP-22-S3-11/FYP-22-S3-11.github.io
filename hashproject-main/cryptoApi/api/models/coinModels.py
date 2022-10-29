@@ -5,7 +5,7 @@ from django.utils import timezone
   
 class Coin(models.Model):
     name = models.CharField(max_length=255)
-    hash = models.CharField(max_length=255)
+    hash = models.CharField(max_length=255, blank=True, null=True, default="")
     symbol = models.CharField(max_length=255)
     marketcap = models.CharField(max_length=255)
     price = models.CharField(max_length=255)

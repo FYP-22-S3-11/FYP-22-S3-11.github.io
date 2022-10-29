@@ -66,6 +66,42 @@ def coin_scraping():
                                  "percent": '0' if (percent24 is None) else percent24.text,
                                  "hash": itemCoins})
     # print("listings", listings)
+
+    all_coins = '/'.join([url, 'all_coins'])
+    print("final_url", all_coins)
+
+    allResponseHash = requests.request("GET", all_coins, headers=headers)
+
+    allSoup = BeautifulSoup(allResponseHash.text, "html.parser")
+
+    for item in allSoup.findAll('tr'):
+
+            name = item.find(
+                'a', attrs={'class': 'm-c-name'})
+            symbol = item.find(
+                'span', attrs={'class': 'c-symbol d-block d-sm-none'})
+            img = item.find('img')
+
+            marketcap = item.find('td', attrs={'class': 'no-wrap market-cap text-right'})
+            price = item.find(
+                'a', attrs={'class': 'price'})
+            volume = item.find('a', attrs={'class': 'volume'})
+            percent24 = item.find('td', attrs={'class': [
+                                  'no-wrap percent-24h text-right positive_24', 'no-wrap percent-24h text-right negative_24']})
+
+            if (name is not None):
+
+                listings.append({"name": '' if (name is None) else name.text,
+                                "symbol": '' if (symbol is None) else symbol.text,
+                                 "img": img['data-src'] if (img is not None and img.has_attr('data-src')) else img['src'] if (img is not None and img.has_attr(
+                                     'src')) else "",
+                                 "marketcap": '0' if (marketcap is None) else marketcap.text,
+                                 "price": '0' if (price is None) else price.text,
+                                 "volume": '0' if (volume is None) else volume.text.replace("\n", ""),
+                                 "percent": '0' if (percent24 is None) else percent24.text,
+                                 "hash": ""})
+    # print("listings", listings)
+    
     crypto_data = isinstance(listings, list)
 
     serializer = CoinSerializer(data=listings, many=crypto_data)

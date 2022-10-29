@@ -10,6 +10,7 @@ urlpatterns = [
     path('list', views.view_algo_list, name='list'),
     path('coinDetail/<type>/<id>', views.view_coin_detail, name='hashList'),
     path('coinListCelery', views.view_coin_list_celery, name='hashList'),
+    path('coinListscrap', views.view_coin_list_coinmarketcap, name='hashList'),
 ]
 
 
