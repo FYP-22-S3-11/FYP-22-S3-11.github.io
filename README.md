@@ -7,7 +7,7 @@
 
 In the project directory, you can run:
 
-### `npm install react-search-autocomplete --legacy-peer-deps
+### `npm install react-search-autocomplete --legacy-peer-deps`
 
 Install the node modules.
 
