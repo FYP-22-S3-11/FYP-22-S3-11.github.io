@@ -69,13 +69,18 @@ def main():
             print("Hash: " + r.json().get('data').get('hash'))
             print("=====================================================\n")
 
-        while True:
-            line = input("Hash: ")
-            if not line:
-                break
-            outfile.write(f"Analyzing '{line.strip()}'\n")
-            write_result(HID.identify_hash(line), outfile)
-            sys.stdout.flush()
+        outfile.write("Proceed to identify the hash type?\n")
+        outfile.write("Press [ENTER] to continue or [CTRL + C] to exit\n")
+        
+        if input() == "":
+            while True:
+                line = input("Hash: ")
+                if not line:
+                    break
+                outfile.write(f"Analyzing '{line.strip()}'\n")
+                write_result(HID.identify_hash(line), outfile)
+                sys.stdout.flush()
+        
     else:
         for string in args.strings:
             if os.path.isfile(string):
