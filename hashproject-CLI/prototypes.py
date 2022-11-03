@@ -1,7 +1,3 @@
-"""
-List of possible hash used
-"""
-
 import re
 from collections import namedtuple
 

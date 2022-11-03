@@ -9,18 +9,52 @@ import hashID
 
 
 def write_result(identified_modes, outfile):
-    """
-    Write human-readable output from identify_hash
-    """
     count = 0
     hash_types = ""
+
     for mode in identified_modes:
         count += 1
         hash_types += f"[+] {mode.name}\n"
-    outfile.write(hash_types + "\n")
+    outfile.write(hash_types)
+
     if count == 0:
-        outfile.write("[+] Unknown hash\n")
+        outfile.write("[!] Unknown hash\n")
     return count > 0
+
+
+def get_coin(outfile, coin, write_out=False):
+    url = "https://crytop.appsndevs.com/api/coinDetail/coin/"
+    r = requests.get(url + coin)
+
+    outfile.write("Name: " + r.json().get('data').get('name') + "\n")
+    outfile.write("Symbol: " + r.json().get('data').get('symbol') + "\n")
+    outfile.write("Type of hash: " + r.json().get('data').get('hash') + "\n")
+    outfile.write("Last update date: " + r.json().get('data').get('last_update_date') + "\n")
+    outfile.write("=====================================================\n")
+    outfile.write("Proceed to identify the hash type?\n")
+    outfile.write("Press [ENTER] to continue or [CTRL + C] to exit\n")
+
+    if write_out:
+        print("Name: " + r.json().get('data').get('name'))
+        print("Symbol: " + r.json().get('data').get('symbol'))
+        print("Type of hash: " + r.json().get('data').get('hash'))
+        print("Last update date: " + r.json().get('data').get('last_update_date'))
+        print("=====================================================")
+        print("Proceed to identify the hash type?")
+        print("Press [ENTER] to continue or [CTRL + C] to exit")
+
+    value = sys.stdin.readline()
+
+    return value == ""
+
+def identify_hash(outfile, HID):
+    while True:
+        line = input("Hash: ")
+        if not line:
+            break
+        outfile.write(f"Analyzing '{line.strip()}'\n\n")
+        write_result(HID.identify_hash(line), outfile)
+        sys.stdout.flush()
 
 
 def main():
@@ -51,44 +85,57 @@ def main():
 
     args = parser.parse_args()
     HID = hashID.HashID()
+    write_out = False
+
 
     if not args.outfile:
         outfile = sys.stdout
     else:
         try:
-            outfile = io.open(args.outfile, "w", encoding="utf-8")
+            write_out = True
         except EnvironmentError:
             parser.error(f"Could not open {args.output}")
 
     if not args.strings or args.strings[0] == "-":
-        if args.coin:
-            url = "https://crytop.appsndevs.com/api/coinDetail/coin/"
-            r = requests.get(url + args.coin)
-            print("Id: " + str(r.json().get('data').get('id')))
-            print("Name: " + r.json().get('data').get('name'))
-            print("Hash: " + r.json().get('data').get('hash'))
-            print("=====================================================\n")
+        if args.coin and not write_out:
+            to_identify = get_coin(outfile, args.coin, write_out)
 
-        while True:
-            line = input("Hash: ")
-            if not line:
-                break
-            outfile.write(f"Analyzing '{line.strip()}'\n")
-            write_result(HID.identify_hash(line), outfile)
-            sys.stdout.flush()
+            if to_identify != "":
+                identify_hash(outfile, HID)
+
+        elif args.coin and write_out:
+            try:
+                outfile = io.open(args.outfile, "w", encoding="utf-8")
+                to_identify = get_coin(outfile, args.coin, write_out)
+                identify_hash(outfile, HID)
+                outfile.close()
+            except KeyboardInterrupt:
+                outfile.close()
+                sys.exit(0)
+            except EnvironmentError:
+                parser.error(f"Could not open {args.output}")
+
     else:
         for string in args.strings:
-            if os.path.isfile(string):
+            if write_out:
                 try:
-                    with io.open(string, "r", encoding="utf-8") as infile:
-                        for line in infile:
-                            if line.strip():
-                                outfile.write(f"Analyzing '{line.strip()}'\n")
-                                write_result(HID.identify_hash(line), outfile)
-                except (EnvironmentError, UnicodeDecodeError):
-                    sys.stdout.write(f"Could not open {string}")
+                    outfile = io.open(args.outfile, "w", encoding="utf-8")
+                    line = input("Hash: ")
+                    
+                    if not line:
+                        break
+                    
+                    outfile.write(f"Analyzing '{line.strip()}'\n\n")
+                    write_result(HID.identify_hash(line), outfile)
+                    sys.stdout.flush()
+                    outfile.close()
+                except KeyboardInterrupt:
+                    outfile.close()
+                    sys.exit(0)
+                except EnvironmentError:
+                    parser.error(f"Could not open {args.output}")
             else:
-                outfile.write(f"Analyzing '{string.strip()}'\n")
+                outfile.write(f"\nAnalyzing '{string.strip()}'\n")
                 write_result(HID.identify_hash(string), outfile)
 
 
