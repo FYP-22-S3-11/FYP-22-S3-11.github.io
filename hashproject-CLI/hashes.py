@@ -77,7 +77,7 @@ def main():
 
     group.add_argument("-c", "--coin",
                        metavar="COIN", type=str,
-                       help="Type of cryptocurrency coin to search for, returns [ID], [Name], [Hash Type]")
+                       help="Type of cryptocurrency coin to search for, returns relevant information about the coin")
 
     group.add_argument("-h", "--help",
                        action="help",
