@@ -1,7 +1,7 @@
 # Malware Link Analysis: `https://walink.ai/asvrOtS`
 
 **Date:** 2026-03-19
-**Status:** Inconclusive — Treat with caution
+**Status:** Not direct malware — Likely investment/stock scam group
 
 ## Domain Information
 
@@ -58,8 +58,37 @@ The platform uses the official `wa.me` API for message delivery.
    - Anti-Phishing Working Group: reportphishing@apwg.org
    - Forward phishing SMS to SPAM (7726)
 
+## Live Analysis (Fetched 2026-03-19)
+
+The shortened URL was safely fetched and analyzed:
+
+| Property | Value |
+|----------|-------|
+| **Short URL** | `https://walink.ai/asvrOtS` |
+| **HTTP Response** | 301 Moved Permanently |
+| **Redirect Target** | `https://chat.whatsapp.com/KpjiVACkxZlBRw2wg1MV79?mode=gi_t` |
+| **Destination Type** | WhatsApp Group Invite |
+| **Group Name** | "C305 Stock Technical Analysis Group" |
+| **Query Parameter** | `mode=gi_t` (standard WhatsApp group invite tracking) |
+
+### Key Observations
+- The link does **not** deliver a malware payload directly
+- The link does **not** redirect to a phishing page
+- The link redirects to a **WhatsApp group invite** for a stock analysis group
+- The group name "C305 Stock Technical Analysis Group" follows a pattern common in mass-created scam groups
+- The use of a URL shortener to distribute group invites is a common social engineering tactic
+
 ## Verdict
 
-**Inconclusive.** The WAlink platform itself is legitimate, but any URL shortener can be weaponized. Without safely expanding the link in a sandboxed environment, the true destination and intent of this specific short link (`asvrOtS`) cannot be confirmed.
+**Not technically malicious, but highly suspicious.** The link redirects to a WhatsApp group invite for "C305 Stock Technical Analysis Group". While no malware payload or phishing page was detected, stock/crypto "analysis" groups shared via shortened links are a well-known social engineering vector used for:
 
-General URL shortener risks apply — shortened links are commonly used in phishing and scam campaigns because they hide the true destination from both users and security filters. Exercise extreme caution.
+1. **Pump-and-dump schemes** — groups that manipulate members into buying specific stocks to inflate prices
+2. **Crypto/forex scams** — lure victims with "free signals" then push fake trading platforms
+3. **Social engineering** — once in the group, admins send phishing links, fake investment apps, or request personal/financial information
+4. **Advance-fee fraud** — convince victims to deposit money into fraudulent platforms
+
+### Recommendations
+- **Do not join** the WhatsApp group
+- **Report** the link to WhatsApp if received unsolicited
+- **Block** the sender who shared this link
+- If you already joined, **leave immediately** and do not click any links shared in the group
