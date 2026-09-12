@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'api.apps.ApiConfig',
+    'dominance.apps.DominanceConfig',
     # 'django_celery_beat',
     # 'django_celery_results',
     'django_cron'
@@ -87,12 +88,12 @@ WSGI_APPLICATION = 'cryptoApi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 # DATABASES = {
 #     'default': {
@@ -153,8 +154,8 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-CELERY_BROKER_URL=env("REDIS_SERVER")
-CELERY_RESULT_BACKEND=env("REDIS_SERVER")
+CELERY_BROKER_URL=env("REDIS_SERVER", default="redis://localhost:6379/0")
+CELERY_RESULT_BACKEND=env("REDIS_SERVER", default="redis://localhost:6379/0")
 CELERY_ACCEPT_CONTENT=['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
