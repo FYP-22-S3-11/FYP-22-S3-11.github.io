@@ -190,6 +190,20 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https") if SECURE else Non
 X_FRAME_OPTIONS = "DENY"
 
 
+# The API is anonymous, and /api/check-file/ runs pylint over whatever is
+# uploaded, so a single caller could otherwise pin the server's CPU. Rates are
+# per IP and tunable; 'uploads' is the scope CheckFile declares.
+REST_FRAMEWORK = {
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": env("DJANGO_ANON_THROTTLE_RATE", default="600/hour"),
+        "uploads": env("DJANGO_UPLOAD_THROTTLE_RATE", default="30/hour"),
+    },
+}
+
+
 # Third-party credentials. These were hardcoded in the api views, tasks and
 # cron job; they now come from the environment (see .env.example) and the
 # views report a 503 when one is missing.

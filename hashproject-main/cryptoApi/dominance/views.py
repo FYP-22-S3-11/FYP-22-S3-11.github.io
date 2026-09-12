@@ -21,6 +21,7 @@ from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from detect_secrets import SecretsCollection
@@ -229,7 +230,17 @@ def optimize_complete_code(path):
 
 
 class CheckFile(APIView):
+    # Deliberately open, as the page calls it without a login, but rate
+    # limited: each request runs pylint over the upload.
     permission_classes = (AllowAny,)
+    throttle_scope = 'uploads'
+
+    def get_throttles(self):
+        # Only POST does the expensive work, so only POST spends the
+        # upload budget; a GET falls back to the default anon rate.
+        if self.request.method == 'POST':
+            return [ScopedRateThrottle()]
+        return super().get_throttles()
 
     def get(self, request, format=None):
         result = {"method": 'get'}
