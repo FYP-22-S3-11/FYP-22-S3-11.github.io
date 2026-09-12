@@ -69,6 +69,7 @@ list_prototypes = [
             HashInfo(name='MD4'),
             HashInfo(name='Double MD5'),
             HashInfo(name='LM'),
+            HashInfo(name='NTLM'),
             HashInfo(name='RIPEMD-128'),
             HashInfo(name='Haval-128'),
             HashInfo(name='Tiger-128', ),
@@ -108,9 +109,21 @@ list_prototypes = [
         modes=[
             HashInfo(name='AIX(smd5)')]),
     Prototype(
-        regex=re.compile(r'^[a-z0-9]{34}$', re.IGNORECASE),
+        # Base58Check: 26-35 chars, version byte 1 (P2PKH) or 3 (P2SH).
+        # Base58 has no 0, O, I or l, so this must stay case-sensitive.
+        regex=re.compile(r'^[13][1-9A-HJ-NP-Za-km-z]{25,34}$'),
         modes=[
-            HashInfo(name='CryptoCurrency(Address)')]),
+            HashInfo(name='Bitcoin Address (P2PKH/P2SH, Base58Check)')]),
+    Prototype(
+        # bech32/bech32m SegWit. Charset excludes 1, b, i and o; the spec allows
+        # an all-uppercase form, hence IGNORECASE.
+        regex=re.compile(r'^(bc|tb)1[02-9ac-hj-np-z]{11,71}$', re.IGNORECASE),
+        modes=[
+            HashInfo(name='Bitcoin Address (Bech32/SegWit)')]),
+    Prototype(
+        regex=re.compile(r'^0x[a-f0-9]{40}$', re.IGNORECASE),
+        modes=[
+            HashInfo(name='Ethereum Address (Keccak-256 derived)')]),
     Prototype(
         regex=re.compile(r'^[a-f0-9]{40}(:.+)?$', re.IGNORECASE),
         modes=[
@@ -132,9 +145,20 @@ list_prototypes = [
             HashInfo(name='Tiger-192'),
             HashInfo(name='SHA-1(Oracle)')]),
     Prototype(
-        regex=re.compile(r'^[a-z0-9]{51}$', re.IGNORECASE),
+        # WIF, uncompressed: 51 chars, always starts 5H, 5J or 5K. Case-sensitive.
+        regex=re.compile(r'^5[HJK][1-9A-HJ-NP-Za-km-z]{49}$'),
         modes=[
-            HashInfo(name='CryptoCurrency(PrivateKey)')]),
+            HashInfo(name='Bitcoin WIF Private Key (uncompressed)')]),
+    Prototype(
+        # WIF, compressed: 52 chars, starts K or L. Was entirely unmatched before.
+        regex=re.compile(r'^[KL][1-9A-HJ-NP-Za-km-z]{51}$'),
+        modes=[
+            HashInfo(name='Bitcoin WIF Private Key (compressed)')]),
+    Prototype(
+        # BIP32/BIP49/BIP84 extended keys: 4-char prefix plus 107 Base58 chars.
+        regex=re.compile(r'^(xprv|xpub|yprv|ypub|zprv|zpub)[1-9A-HJ-NP-Za-km-z]{107}$'),
+        modes=[
+            HashInfo(name='BIP32 Extended Key')]),
     Prototype(
         regex=re.compile(r'^{ssha1}\d{2}\$[a-z0-9$/.]{44}$', re.IGNORECASE),
         modes=[
@@ -154,7 +178,7 @@ list_prototypes = [
             HashInfo(name='Skein-256(224)', ),
             HashInfo(name='Skein-512(224)')]),
     Prototype(
-        regex=re.compile(r'^(\$2[axy]|\$2)\$\d{2}\$[a-z0-9/.]{53}$', re.IGNORECASE),
+        regex=re.compile(r'^(\$2[abxy]|\$2)\$\d{2}\$[a-z0-9/.]{53}$', re.IGNORECASE),
         modes=[
             HashInfo(name='Blowfish(OpenBSD)'),
             HashInfo(name='bcrypt')]),
@@ -228,6 +252,28 @@ list_prototypes = [
         modes=[
             HashInfo(name='SHA-256 Crypt')]),
     Prototype(
+        regex=re.compile(r'^\$6\$(rounds=\d+\$)?[a-z0-9/.]{0,16}\$[a-z0-9/.]{86}$', re.IGNORECASE),
+        modes=[
+            HashInfo(name='SHA-512 Crypt')]),
+    Prototype(
+        regex=re.compile(r'^\$y\$[a-z0-9/.]+\$[a-z0-9/.]+\$[a-z0-9/.]{43}$', re.IGNORECASE),
+        modes=[
+            HashInfo(name='yescrypt')]),
+    Prototype(
+        regex=re.compile(
+            r'^\$argon2(id|i|d)\$v=\d+\$m=\d+,t=\d+,p=\d+(,keyid=[a-z0-9+/]+)?(,data=[a-z0-9+/]+)?\$[a-z0-9+/]+\$[a-z0-9+/]+$',
+            re.IGNORECASE),
+        modes=[
+            HashInfo(name='Argon2')]),
+    Prototype(
+        regex=re.compile(r'^\$scrypt\$ln=\d+,r=\d+,p=\d+\$[a-z0-9+/.=]*\$[a-z0-9+/.=]+$', re.IGNORECASE),
+        modes=[
+            HashInfo(name='scrypt(Passlib)')]),
+    Prototype(
+        regex=re.compile(r'^pbkdf2_(sha1|sha256|sha512)\$\d+\$[a-z0-9+/.=]+\$[a-z0-9+/.=]+$', re.IGNORECASE),
+        modes=[
+            HashInfo(name='Django(PBKDF2)')]),
+    Prototype(
         regex=re.compile(r'^0x[a-f0-9]{4}[a-f0-9]{16}[a-f0-9]{64}$', re.IGNORECASE),
         modes=[
             HashInfo(name='Sybase ASE')]),
@@ -272,7 +318,10 @@ list_prototypes = [
         modes=[
             HashInfo(name='scrypt')]),
     Prototype(
-        regex=re.compile(r'^[a-z0-9/.]{13,}$', re.IGNORECASE),
+        # 13-char DES block plus one or more 11-char extension blocks (13 + 11n).
+        # The previous '{13,}' matched any long alphanumeric string, which made
+        # BigCrypt a false positive on nearly every hash.
+        regex=re.compile(r'^[a-z0-9/.]{13}([a-z0-9/.]{11})+$', re.IGNORECASE),
         modes=[
             HashInfo(name='BigCrypt')]),
 ]
