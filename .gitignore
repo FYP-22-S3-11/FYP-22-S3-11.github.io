@@ -197,3 +197,10 @@ packages/react-devtools-extensions/.tempUserDataDir
 packages/react-devtools-inline/dist
 packages/react-devtools-shell/dist
 packages/react-devtools-timeline/dist
+
+# Celery beat's shelve database (runtime state, regenerated on start)
+celerybeat-schedule
+celerybeat-schedule.*
+
+# pip bootstrap script, fetched from bootstrap.pypa.io when needed
+get-pip.py

@@ -10,6 +10,7 @@ import json
 from api.serializers import CryptoSerializer, CoinSerializer
 import re
 from rest_framework.permissions import AllowAny
+from django.conf import settings
 
 
 class MyCronJob(CronJobBase):
@@ -22,11 +23,11 @@ class MyCronJob(CronJobBase):
 
     def do(self):
         headers = {
-        'Cookie': 'clogin_session=fmac48uek6s9jkuqniuqjps93h'
+        'Cookie': f'clogin_session={settings.COINLORE_SESSION_COOKIE}'
         }
         url = "https://www.coinlore.com/"
 
-        response = requests.request("GET", url, headers=headers)
+        response = requests.request("GET", url, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
         if (response is not None):
             soup = BeautifulSoup(response.text, "html.parser")
             listings = []

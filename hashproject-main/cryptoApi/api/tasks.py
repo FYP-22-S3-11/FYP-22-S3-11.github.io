@@ -6,17 +6,18 @@ from api.serializers import CryptoSerializer, CoinSerializer
 from bs4 import BeautifulSoup
 from .models import Crypto, Coin
 import requests
+from django.conf import settings
 
 @shared_task(name = "coin_scraping")
 def coin_scraping():
     print(f"Celery is working!! Message is coin scraping")
     headers = {
-        'Cookie': 'clogin_session=fmac48uek6s9jkuqniuqjps93h'
+        'Cookie': f'clogin_session={settings.COINLORE_SESSION_COOKIE}'
     }
 
     url = "https://www.coinlore.com"
     Coin.objects.all().delete()
-    response = requests.request("GET", url, headers=headers)
+    response = requests.request("GET", url, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
 
     soup = BeautifulSoup(response.text, "html.parser")
     listingHash = []
@@ -35,7 +36,7 @@ def coin_scraping():
     for itemCoins in listingHash:
         final_url = '/'.join([url, 'coins', itemCoins])
         print("final_url", final_url)
-        responseHash = requests.request("GET", final_url, headers=headers)
+        responseHash = requests.request("GET", final_url, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
 
         soup = BeautifulSoup(responseHash.text, "html.parser")
 
@@ -70,7 +71,7 @@ def coin_scraping():
     all_coins = '/'.join([url, 'all_coins'])
     print("final_url", all_coins)
 
-    allResponseHash = requests.request("GET", all_coins, headers=headers)
+    allResponseHash = requests.request("GET", all_coins, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
 
     allSoup = BeautifulSoup(allResponseHash.text, "html.parser")
 
@@ -114,11 +115,11 @@ def coin_scraping():
 def hash_scraping():
     print(f"Celery is working!! Message is hash scraping")
     headers = {
-        'Cookie': 'clogin_session=fmac48uek6s9jkuqniuqjps93h'
+        'Cookie': f'clogin_session={settings.COINLORE_SESSION_COOKIE}'
     }
     url = "https://www.coinlore.com/"
 
-    response = requests.request("GET", url, headers=headers)
+    response = requests.request("GET", url, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
 
     soup = BeautifulSoup(response.text, "html.parser")
     listings = []

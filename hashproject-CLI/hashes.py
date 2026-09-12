@@ -4,8 +4,14 @@ import io
 import os
 import sys
 import argparse
+from urllib.parse import quote
+
 import requests
 import hashID
+
+
+COIN_API_URL = "https://crytop.appsndevs.com/api/coinDetail/coin/"
+COIN_API_TIMEOUT = 15
 
 
 def write_result(identified_modes, outfile):
@@ -23,38 +29,59 @@ def write_result(identified_modes, outfile):
 
 
 def get_coin(outfile, coin, write_out=False):
-    url = "https://crytop.appsndevs.com/api/coinDetail/coin/"
-    r = requests.get(url + coin)
+    # quote() the coin: it is appended straight onto the URL, so an
+    # unencoded value such as '../../admin' would address a different
+    # endpoint than the one intended.
+    url = COIN_API_URL + quote(coin, safe="")
 
-    outfile.write("Name: " + r.json().get('data').get('name') + "\n")
-    outfile.write("Symbol: " + r.json().get('data').get('symbol') + "\n")
-    outfile.write("Type of hash: " + r.json().get('data').get('hash') + "\n")
-    outfile.write("Last update date: " + r.json().get('data').get('last_update_date') + "\n")
-    outfile.write("=====================================================\n")
-    outfile.write("Proceed to identify the hash type?\n")
-    outfile.write("Press [ENTER] to continue or [CTRL + C] to exit\n")
+    try:
+        r = requests.get(url, timeout=COIN_API_TIMEOUT)
+        r.raise_for_status()
+        data = r.json().get("data")
+    except requests.exceptions.RequestException as err:
+        sys.stderr.write(f"[!] Could not reach the coin API: {err}\n")
+        return False
+    except ValueError:
+        sys.stderr.write("[!] Coin API did not return valid JSON\n")
+        return False
+
+    if not data:
+        sys.stderr.write(f"[!] No coin found for '{coin}'\n")
+        return False
+
+    details = (
+        "Name: " + str(data.get("name")) + "\n"
+        "Symbol: " + str(data.get("symbol")) + "\n"
+        "Type of hash: " + str(data.get("hash")) + "\n"
+        "Last update date: " + str(data.get("last_update_date")) + "\n"
+        "=====================================================\n"
+    )
+    outfile.write(details)
 
     if write_out:
-        print("Name: " + r.json().get('data').get('name'))
-        print("Symbol: " + r.json().get('data').get('symbol'))
-        print("Type of hash: " + r.json().get('data').get('hash'))
-        print("Last update date: " + r.json().get('data').get('last_update_date'))
-        print("=====================================================")
-        print("Proceed to identify the hash type?")
-        print("Press [ENTER] to continue or [CTRL + C] to exit")
+        # the details went to the output file, so mirror them to the terminal
+        sys.stdout.write(details)
 
-    value = sys.stdin.readline()
+    return True
 
-    return value == ""
 
 def identify_hash(outfile, HID):
     while True:
-        line = input("Hash: ")
+        try:
+            line = input("Hash: ")
+        except EOFError:
+            break
         if not line:
             break
         outfile.write(f"Analyzing '{line.strip()}'\n\n")
         write_result(HID.identify_hash(line), outfile)
         sys.stdout.flush()
+
+
+def identify_strings(strings, outfile, HID):
+    for string in strings:
+        outfile.write(f"\nAnalyzing '{string.strip()}'\n")
+        write_result(HID.identify_hash(string), outfile)
 
 
 def main():
@@ -85,62 +112,41 @@ def main():
 
     args = parser.parse_args()
     HID = hashID.HashID()
-    write_out = False
+    write_out = bool(args.outfile)
 
-
-    if not args.outfile:
-        outfile = sys.stdout
-    else:
+    if write_out:
+        # opened once, not once per input, so several INPUTs no longer
+        # truncate each other's results
         try:
-            write_out = True
+            outfile = io.open(args.outfile, "w", encoding="utf-8")
         except EnvironmentError:
-            parser.error(f"Could not open {args.output}")
-
-    if not args.strings or args.strings[0] == "-":
-        if args.coin and not write_out:
-            to_identify = get_coin(outfile, args.coin, write_out)
-
-            if to_identify != "":
-                identify_hash(outfile, HID)
-
-        elif args.coin and write_out:
-            try:
-                outfile = io.open(args.outfile, "w", encoding="utf-8")
-                to_identify = get_coin(outfile, args.coin, write_out)
-                identify_hash(outfile, HID)
-                outfile.close()
-            except KeyboardInterrupt:
-                outfile.close()
-                sys.exit(0)
-            except EnvironmentError:
-                parser.error(f"Could not open {args.output}")
-
+            parser.error(f"Could not open {args.outfile}")
     else:
-        for string in args.strings:
-            if write_out:
-                try:
-                    outfile = io.open(args.outfile, "w", encoding="utf-8")
-                    line = input("Hash: ")
-                    
-                    if not line:
-                        break
-                    
-                    outfile.write(f"Analyzing '{line.strip()}'\n\n")
-                    write_result(HID.identify_hash(line), outfile)
-                    sys.stdout.flush()
-                    outfile.close()
-                except KeyboardInterrupt:
-                    outfile.close()
-                    sys.exit(0)
-                except EnvironmentError:
-                    parser.error(f"Could not open {args.output}")
-            else:
-                outfile.write(f"\nAnalyzing '{string.strip()}'\n")
-                write_result(HID.identify_hash(string), outfile)
+        outfile = sys.stdout
+
+    try:
+        if args.coin:
+            if not get_coin(outfile, args.coin, write_out):
+                return 1
+            print("Proceed to identify the hash type?")
+            print("Press [ENTER] to continue or [CTRL + C] to exit")
+            sys.stdin.readline()
+
+        if args.strings and args.strings[0] != "-":
+            identify_strings(args.strings, outfile, HID)
+        else:
+            identify_hash(outfile, HID)
+    except KeyboardInterrupt:
+        return 0
+    finally:
+        if outfile is not sys.stdout:
+            outfile.close()
+
+    return 0
 
 
 if __name__ == "__main__":
     try:
-        main()
+        sys.exit(main())
     except KeyboardInterrupt:
         pass

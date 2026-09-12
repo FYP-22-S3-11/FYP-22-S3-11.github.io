@@ -7,6 +7,7 @@ import requests
 import json
 from api.serializers import CryptoSerializer, CoinSerializer
 import re
+from django.conf import settings
 regex = re.compile(".*?\((.*?)\)")
 
 
@@ -16,12 +17,17 @@ def view_list(request):
     # checking for the parameters from the URL
     url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest"
 
+    if not settings.COINMARKETCAP_API_KEY:
+        return Response(
+            {"detail": "COINMARKETCAP_API_KEY is not configured"},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
     payload = {}
     headers = {
-        'X-CMC_PRO_API_KEY': '7e49e5ac-b3e2-471f-8e6a-2fdeec271197'
+        'X-CMC_PRO_API_KEY': settings.COINMARKETCAP_API_KEY
     }
 
-    response = requests.request("GET", url, headers=headers, data=payload)
+    response = requests.request("GET", url, headers=headers, data=payload, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
     return Response(json.loads(response.text))
 
 
@@ -34,7 +40,8 @@ def view_detail(request, id):
     headers = {}
 
     response = requests.request(
-        "GET", final_url, headers=headers, data=payload)
+        "GET", final_url, headers=headers, data=payload,
+        timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
 
     soup = BeautifulSoup(response.text, "html.parser")
 
@@ -57,10 +64,10 @@ def view_coin_list(request, id):
     final_url = '/'.join([url, id])
     print(final_url)
     headers = {
-        'Cookie': 'clogin_session=fmac48uek6s9jkuqniuqjps93h'
+        'Cookie': f'clogin_session={settings.COINLORE_SESSION_COOKIE}'
     }
 
-    response = requests.request("GET", final_url, headers=headers)
+    response = requests.request("GET", final_url, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
 
     soup = BeautifulSoup(response.text, "html.parser")
     listings = []
@@ -90,11 +97,11 @@ def view_algo_list_scrapping(request):
     # checking for the parameters from the URL
 
     headers = {
-        'Cookie': 'clogin_session=fmac48uek6s9jkuqniuqjps93h'
+        'Cookie': f'clogin_session={settings.COINLORE_SESSION_COOKIE}'
     }
     url = "https://www.coinlore.com/"
 
-    response = requests.request("GET", url, headers=headers)
+    response = requests.request("GET", url, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
 
     soup = BeautifulSoup(response.text, "html.parser")
     listings = []
@@ -131,13 +138,13 @@ def view_coin_detail_scrapping(request, type, id):
     print(type, id)
     coinUrl = "https://www.coinlore.com/coin"
     headers = {
-        'Cookie': 'clogin_session=fmac48uek6s9jkuqniuqjps93h'
+        'Cookie': f'clogin_session={settings.COINLORE_SESSION_COOKIE}'
     }
 
     if (type == "hash"):
         url = "https://www.coinlore.com/coins"
         final_url = '/'.join([url, id])
-        response = requests.request("GET", final_url, headers=headers)
+        response = requests.request("GET", final_url, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
         soup = BeautifulSoup(response.text, "html.parser")
         name = soup.findAll('tr')[1].find(
             'a', attrs={'class': 'm-c-name'}).text
@@ -145,7 +152,7 @@ def view_coin_detail_scrapping(request, type, id):
         name = id
 
     final_url_coin = '/'.join([coinUrl, name])
-    response = requests.request("GET", final_url_coin, headers=headers)
+    response = requests.request("GET", final_url_coin, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
     coin_soup_detail = BeautifulSoup(response.text, "html.parser")
 
     coind_d = coin_soup_detail.find('table', attrs={'id': 'coin-d'})
@@ -185,12 +192,12 @@ def view_coin_detail_scrapping(request, type, id):
 def view_coin_list_celery(request):
     # checking for the parameters from the URL
     headers = {
-        'Cookie': 'clogin_session=fmac48uek6s9jkuqniuqjps93h'
+        'Cookie': f'clogin_session={settings.COINLORE_SESSION_COOKIE}'
     }
 
     url = "https://www.coinlore.com"
     Coin.objects.all().delete()
-    response = requests.request("GET", url, headers=headers)
+    response = requests.request("GET", url, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
 
     soup = BeautifulSoup(response.text, "html.parser")
     listingHash = []
@@ -210,7 +217,7 @@ def view_coin_list_celery(request):
         final_url = '/'.join([url, 'coins', itemCoins])
         print("final_url", final_url)
 
-        responseHash = requests.request("GET", final_url, headers=headers)
+        responseHash = requests.request("GET", final_url, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
 
         soup = BeautifulSoup(responseHash.text, "html.parser")
 
@@ -245,7 +252,7 @@ def view_coin_list_celery(request):
     all_coins = '/'.join([url, 'all_coins'])
     print("final_url", all_coins)
 
-    allResponseHash = requests.request("GET", all_coins, headers=headers)
+    allResponseHash = requests.request("GET", all_coins, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
 
     allSoup = BeautifulSoup(allResponseHash.text, "html.parser")
 
@@ -301,14 +308,14 @@ def view_coin_detail(request, type, id):
                 
             if len(coin_serializer.data)==0:
                 headers = {
-                    'Cookie': 'clogin_session=fmac48uek6s9jkuqniuqjps93h'
+                    'Cookie': f'clogin_session={settings.COINLORE_SESSION_COOKIE}'
                 }
 
                 url = "https://www.coinlore.com/coin"
                 final_url = '/'.join([url, id])
 
                 print("final_url", final_url)
-                response = requests.request("GET", final_url, headers=headers)
+                response = requests.request("GET", final_url, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
 
                 coin_soup_detail = BeautifulSoup(response.text, "html.parser")
                 name = coin_soup_detail.find('h2', attrs={'class': 'coin-title m-t-10 cl-coin__name'})
@@ -375,12 +382,12 @@ def view_algo_list(request):
 def view_coin_list_coinmarketcap(request):
     # checking for the parameters from the URL
     headers = {
-        'Cookie': 'clogin_session=fmac48uek6s9jkuqniuqjps93h'
+        'Cookie': f'clogin_session={settings.COINLORE_SESSION_COOKIE}'
     }
 
     url = "https://www.coinlore.com"
 
-    response = requests.request("GET", url, headers=headers)
+    response = requests.request("GET", url, headers=headers, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
 
     soup = BeautifulSoup(response.text, "html.parser")
     listingHash = []
@@ -401,13 +408,13 @@ def view_coin_list_coinmarketcap(request):
         else:
             item = itemCoins
             
-        final_url = '/'.join(['http://api.scraperapi.com?api_key=bac38eae1cfb160bfb03e1620606ec3e&url=https://coinmarketcap.com/view', item])
+        final_url = '/'.join(['https://api.scraperapi.com?api_key=' + settings.SCRAPERAPI_API_KEY + '&url=https://coinmarketcap.com/view', item])
 
         print("final_url", final_url)    
         payload={}
         headers = {}
 
-        response = requests.request("GET", final_url, headers=headers, data=payload)
+        response = requests.request("GET", final_url, headers=headers, data=payload, timeout=settings.OUTBOUND_REQUEST_TIMEOUT)
 
 
 
