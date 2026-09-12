@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
+from django.core.exceptions import ImproperlyConfigured
 import environ
 env = environ.Env()
 
@@ -22,10 +22,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xq@vbl4-$cwfk+4vz8k!x234$$j5+lvsp296-ho3$bl7(%7%k4'
+# Set DJANGO_SECRET_KEY in the environment or in .env (see .env.example).
+SECRET_KEY = env("DJANGO_SECRET_KEY", default="")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DJANGO_DEBUG", default=False)
+
+if not SECRET_KEY:
+    if DEBUG:
+        from django.core.management.utils import get_random_secret_key
+        SECRET_KEY = get_random_secret_key()
+    else:
+        raise ImproperlyConfigured(
+            "DJANGO_SECRET_KEY must be set when DEBUG is off")
 
 
 
@@ -128,8 +137,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-ALLOWED_HOSTS = ['*']
-CORS_ORIGIN_ALLOW_ALL = True
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+
+# CORS_ORIGIN_ALLOW_ALL = True exposed every endpoint to every origin.
+CORS_ALLOW_ALL_ORIGINS = env.bool("DJANGO_CORS_ALLOW_ALL", default=False)
+CORS_ALLOWED_ORIGINS = env.list(
+    "DJANGO_CORS_ALLOWED_ORIGINS",
+    default=["http://localhost:3000", "http://127.0.0.1:3000"])
 
 
 LANGUAGE_CODE = 'en-us'
@@ -159,3 +173,34 @@ CELERY_RESULT_BACKEND=env("REDIS_SERVER", default="redis://localhost:6379/0")
 CELERY_ACCEPT_CONTENT=['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
+
+
+# Transport and cookie hardening, the items `manage.py check --deploy` flags.
+# Off by default because they require the site to be served over TLS; set
+# DJANGO_SECURE=1 once it is, and each can still be overridden on its own.
+SECURE = env.bool("DJANGO_SECURE", default=False)
+SECURE_SSL_REDIRECT = env.bool("DJANGO_SECURE_SSL_REDIRECT", default=SECURE)
+SESSION_COOKIE_SECURE = env.bool("DJANGO_SESSION_COOKIE_SECURE", default=SECURE)
+CSRF_COOKIE_SECURE = env.bool("DJANGO_CSRF_COOKIE_SECURE", default=SECURE)
+SECURE_HSTS_SECONDS = env.int("DJANGO_SECURE_HSTS_SECONDS", default=31536000 if SECURE else 0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = SECURE
+SECURE_HSTS_PRELOAD = SECURE
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https") if SECURE else None
+X_FRAME_OPTIONS = "DENY"
+
+
+# Third-party credentials. These were hardcoded in the api views, tasks and
+# cron job; they now come from the environment (see .env.example) and the
+# views report a 503 when one is missing.
+COINMARKETCAP_API_KEY = env("COINMARKETCAP_API_KEY", default="")
+SCRAPERAPI_API_KEY = env("SCRAPERAPI_API_KEY", default="")
+COINLORE_SESSION_COOKIE = env("COINLORE_SESSION_COOKIE", default="")
+
+# Every outbound scrape runs inside a request/response cycle, so none of them
+# may block indefinitely.
+OUTBOUND_REQUEST_TIMEOUT = env.int("OUTBOUND_REQUEST_TIMEOUT", default=20)
+
+# Executing an uploaded file (node via Naked, or in-process via js2py) is off
+# unless an operator turns it on deliberately. See dominance/views.py.
+DOMINANCE_ALLOW_JS_EXECUTION = env.bool("DOMINANCE_ALLOW_JS_EXECUTION", default=False)

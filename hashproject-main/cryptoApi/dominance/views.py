@@ -1,348 +1,349 @@
+"""Static analysis endpoint behind the "Check Dominance" page.
 
-from re import sub
-from django.http import HttpResponse
-from rest_framework.permissions import AllowAny
-from rest_framework.views import APIView
-from rest_framework.response import Response
+Uploads here are untrusted input, so the analysis is static: pylint for code
+quality and detect_secrets for leaked credentials. Running an upload, either
+through node (Naked) or in-process (js2py), is gated behind
+settings.DOMINANCE_ALLOW_JS_EXECUTION, which is off by default; the endpoint
+is unauthenticated, so with execution on it is remote code execution for
+anyone who can reach it.
+"""
+
 import os
-from django.core.files.storage import FileSystemStorage
-from io import StringIO
-from pylint.lint import Run
-from pylint.reporters.text import TextReporter
-import time
 import shutil
+import tempfile
+import time
 import zipfile
-import json
+from io import StringIO
+
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from detect_secrets import SecretsCollection
 from detect_secrets.settings import default_settings
+from pylint.lint import Run
+from pylint.reporters.text import TextReporter
 
-# from requests_html import HTML
 
-import js2py
-from Naked.toolshed.shell import execute_js, muterun_js
+# Limits applied before any work is done on an upload.
+ALLOWED_SUFFIXES = ('.js', '.py', '.zip')
+MAX_UPLOAD_BYTES = 5 * 1024 * 1024
+MAX_ZIP_MEMBERS = 200
+MAX_ZIP_TOTAL_BYTES = 20 * 1024 * 1024
 
 
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
 
-def optimize_code(filename):
-    data = {'errors': None,'time':0}
+def js_execution_enabled():
+    return bool(getattr(settings, 'DOMINANCE_ALLOW_JS_EXECUTION', False))
+
+
+def reject_upload(upload):
+    """Return a reason to refuse this upload, or None to accept it."""
+    name = os.path.basename(upload.name or '')
+    if not name:
+        return "file has no name"
+    if not name.lower().endswith(ALLOWED_SUFFIXES):
+        return f"{name}: only {', '.join(ALLOWED_SUFFIXES)} files are accepted"
+    if upload.size is not None and upload.size > MAX_UPLOAD_BYTES:
+        return f"{name}: larger than the {MAX_UPLOAD_BYTES // (1024 * 1024)}MB limit"
+    return None
+
+
+def save_upload(upload, workdir):
+    """Save one upload inside workdir and return its full path.
+
+    The stored name is basename()d before it reaches storage, so a name like
+    '../../settings.py' cannot write outside workdir.
+    """
+    fs = FileSystemStorage(location=workdir)
+    stored = fs.save(os.path.basename(upload.name), upload)
+    return os.path.join(workdir, stored)
+
+
+def optimize_code(path):
+    data = {'errors': None, 'time': 0}
     pylint_output = StringIO()  # Custom open stream
     reporter = TextReporter(pylint_output)
     start = time.time()
-    Run(['--enable=all',filename], reporter=reporter, exit=False)
-    end = time.time()    
+    Run(['--enable=all', path], reporter=reporter, exit=False)
+    end = time.time()
     data['errors'] = pylint_output.getvalue()
     data['time'] = end - start
     return data
 
-def optimization_response(filename, name= None, folder = None):
-    response = optimize_code(filename)
-    opt_response = []
-    response_dict = {'optimization': {},'rated':None, 
-                    'time':response['time'],
-                    'fileName': filename,
-                    'visualization_data' : {'text': filename.rsplit('/')[-1], 'value': response['time']  },
-                    'secret_data': None}
-    response = response['errors'].split("\n")
-    index = 1
-    for res in response:
-        if ':' in res:
-            actual_res = res
-            actual_res = actual_res.split(':')
-            if len(actual_res) >=4:
-                response_dict['optimization'][index] = actual_res[4] + ' LINE NO.' + actual_res[1]
-                index+=1
-            elif 'rated' in res:
-                response_dict['rated'] = res
-            opt_response.append(actual_res)
 
-    response_dict['secret_data'] = detectSecrets(name, folder)
-    return response_dict
-
-def isJsFile(filename):
-    if '.js' in filename:
-        return True
-    elif '.py' in filename:
-        return True
-    else:
-        return False
-
-def isZippedFile(filename):
-    if '.zip' in filename:
-        return True
-    else:
-        return False
-
-def optimize_zip(filename,folder):
-    response = {}
-    with zipfile.ZipFile(folder+filename, 'r') as zip_ref:
-        zip_ref.extractall(folder)
-
-    for path, subdirs, files in os.walk(folder):
-        for name in files:
-            if '.js' in name and '.json' not in name and '.map' not in name:
-                # print("--------path", path)
-                # print("------- subdir", subdirs)
-                if len(path) > 10:
-                    res = optimization_response(path+ '/' + name, name, path)
-                    response[path+ '/' + name] = res
-                else:
-                    res = optimization_response(path+name, name, path)
-                    response[path+name] = res
-
-                
-    # return
-
-    ## openeing all files
-    # for f in os.listdir(folder):
-    #     if '.js' in f:
-    #         res = optimization_response(folder+f)
-    #         response[f] = res
-    # print("-----------------------response",response)
-    return response
-
-def detectSecrets(filename, folder):   
+def detect_secrets_in(path):
     secrets = SecretsCollection()
     with default_settings():
-        if(folder[len(folder)-1] != '/'):
-            secrets.scan_file(folder+'/'+filename)
-        else:
-            secrets.scan_file(folder+filename)
+        secrets.scan_file(path)
     res = secrets.json()
-    if res:
-        if(folder[len(folder)-1] != '/'):
-            return {'lineNo': res[folder+'/'+filename][0]['line_number']}
-        else:
-            return {'lineNo': res[folder+filename][0]['line_number']}
-    else:
-        return None
+    findings = res.get(path) if res else None
+    if findings:
+        return {'lineNo': findings[0]['line_number']}
+    return None
 
 
-def getTimeExecution():
-    time = {}
-    return time
+def optimization_response(path):
+    response = optimize_code(path)
+    display_name = os.path.basename(path)
+    response_dict = {'optimization': {}, 'rated': None,
+                     'time': response['time'],
+                     'fileName': display_name,
+                     'visualization_data': {'text': display_name, 'value': response['time']},
+                     'secret_data': None}
+    index = 1
+    for res in response['errors'].split("\n"):
+        if 'rated' in res:
+            response_dict['rated'] = res.strip()
+            continue
+        if ':' not in res:
+            continue
+        actual_res = res.split(':')
+        if len(actual_res) >= 5:
+            response_dict['optimization'][index] = actual_res[4] + ' LINE NO.' + actual_res[1]
+            index += 1
 
-def optimizeCompleteCode(folder, filename):
-    data = {}
-    file1 = open(folder+filename, 'r')
-
-    ## Getting all functions and results
-    lines = file1.read()
-    # result = muterun_js(folder+filename)
-    # print("-------lines", lines)
-    startTime = time.time()
-    result = execute_js(folder+filename)
-    endTime = time.time()
-    # print("-------1111result", result)
-    # if result:
-    #     print("------true")
-    # print("-------1111result", result.__dir__())
-    
-    return data
-
-
-def findDominancy(data):
-    new_data = data
-    max = data[0]['time']
-    new_data[0]['dominant'] = True
-    index = 0
-    for dt in data:
-        if max < dt['time']:
-            print("------yes")
-            new_data['dominant'] = True
-        else:
-            new_data['dominant'] = False
-        index+=1
-        
-    return new_data
+    response_dict['secret_data'] = detect_secrets_in(path)
+    return response_dict
 
 
+def is_js_file(filename):
+    return filename.lower().endswith(('.js', '.py'))
 
 
-def optimizeMethods(folder, filename):
+def is_zipped_file(filename):
+    return filename.lower().endswith('.zip')
+
+
+def safe_extract(zip_path, dest):
+    """Extract zip_path into dest, refusing members that escape it.
+
+    zipfile.extractall() honours '../' and absolute paths in member names, so
+    an uploaded archive could previously write anywhere the server user could
+    write (Zip Slip). Member count and total expanded size are capped too.
+    """
+    dest_real = os.path.realpath(dest)
+    with zipfile.ZipFile(zip_path) as archive:
+        members = [m for m in archive.infolist() if not m.is_dir()]
+        if len(members) > MAX_ZIP_MEMBERS:
+            raise ValueError(f"archive holds more than {MAX_ZIP_MEMBERS} files")
+        if sum(m.file_size for m in members) > MAX_ZIP_TOTAL_BYTES:
+            raise ValueError("archive expands to more than the permitted size")
+
+        for member in members:
+            target = os.path.realpath(os.path.join(dest_real, member.filename))
+            if target != dest_real and not target.startswith(dest_real + os.sep):
+                raise ValueError(
+                    f"refusing archive member outside the target directory: {member.filename}")
+            os.makedirs(os.path.dirname(target), exist_ok=True)
+            with archive.open(member) as src, open(target, 'wb') as dst:
+                shutil.copyfileobj(src, dst)
+
+
+def optimize_zip(zip_path, workdir):
+    response = {}
+    extract_root = os.path.join(workdir, 'extracted')
+    os.makedirs(extract_root, exist_ok=True)
+    safe_extract(zip_path, extract_root)
+
+    for path, _subdirs, files in os.walk(extract_root):
+        for name in files:
+            if name.endswith('.js') and not name.endswith(('.json', '.map')):
+                full = os.path.join(path, name)
+                # keyed by the path inside the archive, not the server's temp dir
+                response[os.path.relpath(full, extract_root)] = optimization_response(full)
+    return response
+
+
+def optimize_methods(path):
+    """Time each function in an uploaded script by running it.
+
+    Off unless DOMINANCE_ALLOW_JS_EXECUTION is set: this evaluates code that
+    an unauthenticated caller supplied.
+    """
+    if not js_execution_enabled():
+        return []
+
+    import js2py  # imported lazily so the default path never loads it
+
     data = []
-    file1 = open(folder+filename, 'r')
-    ## Getting all functions and results
-    methods = []
+    with open(path, 'r') as handle:
+        lines = handle.readlines()
+
     method_def = []
-    method_names = []
     method_calls = []
-    method_execution_time = []
-    lines = file1.readlines()
     func = False
-    str = ''
-    str_def = ''
+    block = ''
+    block_def = ''
     for line in lines:
         if 'function' in line:
-            func= True
-            ln = line.split('function ')[1]
-            ln = ln.split('(')[0]
-            method_names.append(ln)
+            func = True
 
         if '}' in line:
-            str+=line.replace('\n','')
-            str_def+=line
+            block += line.replace('\n', '')
+            block_def += line
             func = False
-            methods.append(str)
-            method_def.append(str_def)
-            str =''
+            method_def.append(block_def)
+            block = ''
+            block_def = ''
             continue
-        str+=line.replace('\n','')
-        str_def+=line
+        block += line.replace('\n', '')
+        block_def += line
 
-        ##getting method calls
         if not func and '(' in line and ')' in line:
             method_calls.append(line.strip())
-    index = 0
-    for method in method_calls:
-        dt = {}
-        method_definition = method_def[index]
+
+    for index, method in enumerate(method_calls):
+        if index >= len(method_def):
+            break
+        js = method_def[index] + '\n' + method
         startTime = time.time()
-        js = method_definition + '\n'+ method
         result = js2py.eval_js(js.replace("document.write", "return "))
         endTime = time.time()
-        execTime = endTime - startTime
-        index+=1
-        dt ={'method': method, 'time': execTime}
-        data.append(dt)
+        data.append({'method': method, 'time': endTime - startTime})
     return data
+
+
+def optimize_complete_code(path):
+    """Run a whole uploaded script through node and time it.
+
+    Off unless DOMINANCE_ALLOW_JS_EXECUTION is set, for the same reason as
+    optimize_methods: this executes caller-supplied code.
+    """
+    if not js_execution_enabled():
+        return {}
+
+    from Naked.toolshed.shell import execute_js  # imported lazily
+
+    startTime = time.time()
+    execute_js(path)
+    endTime = time.time()
+    return {'time': endTime - startTime}
+
 
 class CheckFile(APIView):
     permission_classes = (AllowAny,)
+
     def get(self, request, format=None):
-        result = {"method":'get'}     
+        result = {"method": 'get'}
         return Response(result)
 
     def post(self, request, format=None):
         """
         get file and check
         """
-        result = {'warning': {'count':0,
-                            'details': [] },
-                'error': {'count': 0,
-                            'details':[] },
-                'dominace' : {'count' : 0,
-                            'details' :[] },
-                'optimization': [],
-                'time': 0,
-                'fileType': None,
-                'fileName': None,
-                'visualization_data' : {'text': None, 'value': None},         
-                'secret_data' : [],
-                'methods' : [],
-                'class_methods' : [],
-                'max': 0,
-                }
-        file_obj = request.FILES.getlist('file',[])
-        # dir = '/home/crytopcompare/cryptoApi/my_folder/'
-        dir = 'my_folder/'
+        result = {'warning': {'count': 0,
+                              'details': []},
+                  'error': {'count': 0,
+                            'details': []},
+                  'dominace': {'count': 0,
+                               'details': []},
+                  'optimization': [],
+                  'time': 0,
+                  'fileType': None,
+                  'fileName': None,
+                  'visualization_data': {'text': None, 'value': None},
+                  'secret_data': [],
+                  'methods': [],
+                  'class_methods': [],
+                  'max': 0,
+                  }
+        uploads = request.FILES.getlist('file', [])
+        if not uploads:
+            return Response({'detail': 'no file uploaded'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
-        ##delete previous/extra files
+        for upload in uploads:
+            reason = reject_upload(upload)
+            if reason:
+                return Response({'detail': reason}, status=status.HTTP_400_BAD_REQUEST)
+
+        # A per-request directory, rather than one shared folder emptied on
+        # every call: concurrent requests no longer delete each other's
+        # uploads, and nothing is left on disk afterwards.
+        workdir = tempfile.mkdtemp(prefix='dominance-')
         try:
-            for f in os.listdir(dir):
+            if len(uploads) == 1:
+                upload = uploads[0]
+                path = save_upload(upload, workdir)
+                name = os.path.basename(path)
+
                 try:
-                    os.remove(os.path.join(dir, f))
-                except:
-                    shutil.rmtree(os.path.join(dir, f))
-        except Exception as e:
-            print("error",e)
+                    result['methods'] = optimize_methods(path)
+                    if result['methods']:
+                        result['max'] = max(result['methods'], key=lambda x: x['time'])
+                except Exception as err:
+                    print("optimize_methods failed:", err)
 
+                try:
+                    result['class_methods'] = optimize_complete_code(path)
+                except Exception as err:
+                    print("optimize_complete_code failed:", err)
 
-        ### check if multiple files
-        if len(file_obj) == 1:
-            file_obj = file_obj[0]
-            
-            ## saving file
-            fs = FileSystemStorage(location=dir)
-            filename = fs.save(file_obj.name, file_obj)
+                if is_js_file(name):
+                    result['fileType'] = 'js'
+                    result['fileName'] = name
+                    res = optimization_response(path)
+                    result['optimization'] = res['optimization']
+                    result['rated'] = res['rated']
+                    # the page reads 'rate'; kept in step with 'rated'
+                    result['rate'] = res['rated']
+                    result['time'] = res['time']
+                    result['visualization_data']['text'] = name
+                    result['visualization_data']['value'] = res['time']
+                    result['secret_data'] = detect_secrets_in(path)
 
-            ###testing
-            try:
-                result['methods'] = optimizeMethods(dir, file_obj.name)
-                result['max'] = max(result['methods'], key=lambda x:x['time'])
-            except Exception as e:
-                print("error 275")
-
-            try:
-                result['class_methods'] = optimizeCompleteCode(dir, file_obj.name)
-            except Exception as e:
-                print("error 280", e)
-            ### testing ends
-
-
-
-            ## getting upload type
-            if isJsFile(file_obj.name):
-                result['fileType'] = 'js'
-                result['fileName'] = filename
-                ## optimization starts
-                res = optimization_response(dir+filename, filename, dir)
-                result['optimization'] = res['optimization']
-                result['rated'] = res['rated'] 
-                result['time'] = res['time']
-                result['visualization_data']['text'] = filename
-                result['visualization_data']['value'] = res['time']
-                result['secret_data'] = detectSecrets(filename, dir)
-                ## optimization ends  
-            
-            if isZippedFile(file_obj.name):
-                result['fileType'] = 'zip'         
-                result['optimization'] = optimize_zip(file_obj.name,dir)
+                if is_zipped_file(name):
+                    result['fileType'] = 'zip'
+                    try:
+                        result['optimization'] = optimize_zip(path, workdir)
+                    except (ValueError, zipfile.BadZipFile) as err:
+                        return Response({'detail': str(err)},
+                                        status=status.HTTP_400_BAD_REQUEST)
+                    result['visualization_data'] = [
+                        v['visualization_data'] for v in result['optimization'].values()]
+            else:
+                result['fileType'] = 'multi'
+                complete_res = []
                 visualizationData = []
-                for k,v in result['optimization'].items():
-                    visualizationData.append(v['visualization_data'])
+
+                for upload in uploads:
+                    response = {}
+                    path = save_upload(upload, workdir)
+                    name = os.path.basename(path)
+
+                    if is_js_file(name):
+                        response['fileType'] = 'js'
+                        response['fileName'] = name
+                        res = optimization_response(path)
+                        response['optimization'] = res['optimization']
+                        response['rated'] = res['rated']
+                        response['rate'] = res['rated']
+                        response['time'] = res['time']
+                        response['secret_data'] = res['secret_data']
+                        visualizationData.append({'text': name, 'value': res['time']})
+
+                    if is_zipped_file(name):
+                        response['fileType'] = 'zip'
+                        try:
+                            response['optimization'] = optimize_zip(path, workdir)
+                        except (ValueError, zipfile.BadZipFile) as err:
+                            return Response({'detail': str(err)},
+                                            status=status.HTTP_400_BAD_REQUEST)
+                        for v in response['optimization'].values():
+                            visualizationData.append(v['visualization_data'])
+
+                    complete_res.append(response)
+                result['optimization'] = complete_res
                 result['visualization_data'] = visualizationData
-        else:
-            result['fileType'] = 'multi'
-            complete_res = [] 
-            visualizationData = []  
+        finally:
+            shutil.rmtree(workdir, ignore_errors=True)
 
-            ##saving files
-            for obj in file_obj:
-                response = {}
-                
-                ## saving file
-                fs = FileSystemStorage(location=dir)
-                filename = fs.save(obj.name, obj)
-
-                ## getting upload type
-                if isJsFile(obj.name):
-                    response['fileType'] = 'js'
-                    response['fileName'] = obj.name
-                    ## optimization starts
-                    res = optimization_response(dir+filename)
-                    response['optimization'] = res['optimization']
-                    response['rated'] = res['rated'] 
-                    response['time'] = res['time']
-                    # response['visualization_data']['text'] = obj.name
-                    # response['visualization_data']['value'] = res['time']
-                    visualizationData.append({'text': obj.name, 'value': res['time']})
-                    ## optimization ends  
-                
-                if isZippedFile(obj.name):
-                    response['fileType'] = 'zip'           
-                    response['optimization'] = optimize_zip(obj.name,dir)                    
-                    for k,v in response['optimization'].items():
-                        visualizationData.append(v['visualization_data'])
-
-                complete_res.append(response)
-            result['optimization'] = complete_res
-            result['visualization_data'] = visualizationData 
-
-            
-        
-        # print("------get secrets start")
-        
-        # secrets = SecretsCollection()
-        # with default_settings():
-        #     secret_used = secrets.scan_file('dominance/views.py')
-        # print("--------secr", secret_used)
-        # import json
-        # print(json.dumps(secrets.json(), indent=2))
-
-        # print("-------secret ends")            
-
-        return Response({'result':result})
+        return Response({'result': result})
